@@ -1,0 +1,88 @@
+Screen {
+    layout: vertical;
+}
+
+Header {
+    dock: top;
+}
+
+Footer {
+    dock: bottom;
+}
+
+#paths {
+    height: auto;
+    padding: 1 2;
+    color: $text-muted;
+    border-bottom: solid $primary-darken-2;
+}
+
+#search {
+    margin: 1 2 0 2;
+}
+
+#albums, #songs {
+    height: 1fr;
+    margin: 1 2 0 2;
+    border: round $primary;
+}
+
+ListItem {
+    height: auto;
+    min-height: 3;
+    padding: 1 2;
+}
+
+ListItem.--highlight {
+    background: $accent 25%;
+}
+
+#catalog-status, #album-status, #download-status {
+    height: auto;
+    padding: 1 2;
+    color: $text-muted;
+}
+
+.screen-title {
+    height: auto;
+    padding: 1 2;
+    text-style: bold;
+    background: $primary-darken-3;
+}
+
+#confirmation-list, #result-list {
+    height: 1fr;
+    margin: 1 2;
+    padding: 1 2;
+    border: round $primary;
+}
+
+.button-row, #loading-actions {
+    height: auto;
+    align-horizontal: center;
+    padding: 1;
+}
+
+.button-row Button, #loading-actions Button {
+    margin: 0 1;
+}
+
+#loading-message {
+    width: 80%;
+    height: auto;
+    margin: 4 10;
+    padding: 2;
+    text-align: center;
+    border: round $primary;
+}
+
+#download-progress {
+    margin: 2 2 1 2;
+}
+
+#download-log {
+    height: 1fr;
+    margin: 1 2 2 2;
+    border: round $primary;
+    padding: 1;
+}
