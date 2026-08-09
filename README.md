@@ -4,6 +4,17 @@ MSRMusicTool 是一个基于 Python 和 Textual 的塞壬唱片音乐下载工�
 [Monster Siren Records](https://monster-siren.hypergryph.com/music) 获取专辑与歌曲索引，
 支持终端内搜索、按专辑或单曲选择，以及批量下载音频、LRC 歌词和专辑封面。
 
+## 下载独立版本
+
+可以从 [Releases](https://github.com/zoisythe/MSRMusicTool/releases/latest) 下载对应系统的
+`msr-tool-*` 单文件程序。独立版本已经包含 Python 和全部依赖，无需另外安装运行环境。
+
+- Windows：下载 `.exe` 文件后在终端中运行。
+- Linux、macOS：下载后先执行 `chmod +x msr-tool-*`，再从终端启动。
+- macOS 构建未签名；首次运行时可能需要在系统安全设置中确认。
+
+`SHA256SUMS` 提供所有 Release 文件的 SHA-256 校验值。
+
 ## 安装与运行
 
 需要 Python 3.11 或更高版本。使用 [uv](https://docs.astral.sh/uv/) 安装：
@@ -80,10 +91,25 @@ directory = "D:/Music"
 
 ```console
 uv sync --dev
-uv run ruff check src tests
+uv run pre-commit install
+uv run pre-commit run --all-files
 uv run pytest
 uv build
 ```
+
+pre-commit 会运行 Ruff 检查和格式化，并通过 `commit-msg` hook 要求提交信息符合
+[Conventional Commits](https://www.conventionalcommits.org/)，例如 `feat: add album search`。
+
+构建当前系统的独立单文件程序：
+
+```console
+uv sync --group standalone
+uv run --no-sync python scripts/build_standalone.py
+uv run --no-sync python scripts/verify_standalone.py
+```
+
+构建结果写入 `release/`。推送 `v*` 标签时，GitHub Actions 会分别构建 Windows、Linux、
+macOS 独立程序，并自动创建 GitHub Release。
 
 常规测试完全离线。设置 `MSR_RUN_LIVE_TESTS=1` 后可运行只读取索引和媒体 HEAD 的官网契约测试：
 

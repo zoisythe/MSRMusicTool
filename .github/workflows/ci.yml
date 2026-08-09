@@ -22,7 +22,6 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - run: uv sync --frozen --dev
-      - run: uv run ruff check src tests
-      - run: uv run ruff format --check src tests
+      - run: uv run pre-commit run --all-files --show-diff-on-failure
       - run: uv run pytest
       - run: uv build

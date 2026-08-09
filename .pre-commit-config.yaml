@@ -1,0 +1,23 @@
+minimum_pre_commit_version: "4.6.1"
+default_install_hook_types: [pre-commit, commit-msg]
+
+repos:
+  - repo: local
+    hooks:
+      - id: ruff-check
+        name: Ruff check
+        entry: uv run --no-sync ruff check --fix
+        language: system
+        types_or: [python, pyi]
+      - id: ruff-format
+        name: Ruff format
+        entry: uv run --no-sync ruff format
+        language: system
+        types_or: [python, pyi]
+      - id: conventional-commit
+        name: Conventional Commit message
+        entry: uv run --no-sync python -m msr_music_tool.commit_message
+        language: system
+        stages: [commit-msg]
+        always_run: true
+        pass_filenames: true
