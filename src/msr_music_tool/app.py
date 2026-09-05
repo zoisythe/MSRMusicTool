@@ -72,13 +72,17 @@ class LoadingScreen(Screen[None]):
     BINDINGS = [
         Binding("r", "retry", "重试", show=False),
         Binding("escape", "exit_app", "退出"),
+        Binding("left", "focus_retry", "重试", show=False),
+        Binding("up", "focus_retry", "重试", show=False),
+        Binding("right", "focus_exit", "退出", show=False),
+        Binding("down", "focus_exit", "退出", show=False),
     ]
 
     def compose(self) -> ComposeResult:
         yield Static("正在读取塞壬唱片索引……", id="loading-message")
         with Horizontal(id="loading-actions"):
-            yield Button("重试", id="retry", variant="primary")
-            yield Button("退出", id="exit", variant="default")
+            yield Button("重试", id="retry")
+            yield Button("退出", id="exit")
         yield Footer()
 
     def on_mount(self) -> None:
@@ -101,6 +105,12 @@ class LoadingScreen(Screen[None]):
 
     def action_exit_app(self) -> None:
         self.app.exit()
+
+    def action_focus_retry(self) -> None:
+        self.query_one("#retry", Button).focus()
+
+    def action_focus_exit(self) -> None:
+        self.query_one("#exit", Button).focus()
 
     @on(Button.Pressed)
     def handle_button(self, event: Button.Pressed) -> None:

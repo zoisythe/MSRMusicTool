@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import httpx
 import pytest
 from textual.widgets import Button, Input, Label, ListView
 
@@ -11,6 +12,7 @@ from msr_music_tool.app import (
     AlbumScreen,
     CatalogScreen,
     ConfirmScreen,
+    LoadingScreen,
     MonsterSirenApp,
     ResultScreen,
 )
@@ -40,6 +42,60 @@ def _app_fixture(tmp_path: Path) -> MonsterSirenApp:
         catalog=catalog,
         album_details=details,
     )
+
+
+@pytest.mark.asyncio
+async def test_http_client_supports_socks_proxy_from_environment(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("ALL_PROXY", "socks5://127.0.0.1:1080")
+    monkeypatch.setenv("all_proxy", "socks5://127.0.0.1:1080")
+    monkeypatch.delenv("NO_PROXY", raising=False)
+    monkeypatch.delenv("no_proxy", raising=False)
+
+    async with app_module._http_client() as client:
+        assert isinstance(client, httpx.AsyncClient)
+
+
+@pytest.mark.asyncio
+async def test_loading_error_buttons_are_keyboard_selectable(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    class FakeClient:
+        async def __aenter__(self) -> object:
+            raise RuntimeError("index failed")
+
+        async def __aexit__(self, *_args: object) -> None:
+            return None
+
+    monkeypatch.setattr(app_module, "_http_client", FakeClient)
+    app = MonsterSirenApp(AppConfig(tmp_path / "config.toml", tmp_path / "downloads", False))
+
+    async with app.run_test(size=(80, 24)) as pilot:
+        await pilot.pause()
+        assert isinstance(app.screen, LoadingScreen)
+        retry = app.screen.query_one("#retry", Button)
+        exit_button = app.screen.query_one("#exit", Button)
+        assert retry.variant == exit_button.variant == "default"
+        assert retry.has_focus
+        unfocused_style = exit_button.rich_style
+        focused_style = retry.rich_style
+        assert focused_style != unfocused_style
+
+        await pilot.press("right")
+        assert exit_button.has_focus
+        assert exit_button.rich_style == focused_style
+        assert retry.rich_style == unfocused_style
+
+        await pilot.press("left")
+        assert retry.has_focus
+        await pilot.press("down")
+        assert exit_button.has_focus
+        await pilot.press("up")
+        assert retry.has_focus
+        await pilot.press("right", "enter")
+        await pilot.pause()
+        assert not app.is_running
 
 
 @pytest.mark.asyncio
