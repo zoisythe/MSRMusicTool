@@ -1,0 +1,1 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="0" skipped="0" tests="1" time="3.053" timestamp="2026-10-01T22:32:10.458099+08:00" hostname="Zephyrus"><testcase classname="tests.test_e2e" name="test_tui_modes_live_progress_resize_and_interrupt" time="2.169" /></testsuite></testsuites>

@@ -1,0 +1,145 @@
+{
+  "date": "2026-10-01T22:35:00.569234+08:00",
+  "platform": "Windows-11-10.0.26340-SP0",
+  "python": "3.14.7",
+  "minimum_python_verified": "3.11.16",
+  "engines": [
+    {
+      "version": "aria2 version 1.37.0",
+      "sha256": "be2099c214f63a3cb4954b09a0becd6e2e34660b886d4c898d260febfe9d70c2"
+    },
+    {
+      "version": "Aria2 Next version 2.8.3",
+      "sha256": "08afaf2a44811d38e7ce538da719ab06d6925bcaad1231ee7b92c497f58e5aac"
+    }
+  ],
+  "artifacts": [
+    {
+      "file": "release/msr-tool-windows-x86_64.exe",
+      "sha256": "090849c3e741c8937e6530afccedc76123faea096116729022768074858cb4b1"
+    },
+    {
+      "file": "dist/msrmusictool-0.2.0-py3-none-any.whl",
+      "sha256": "192d2043a32d25194df44b989a22101a61defd2443c272cf027666e7ad0ba9ab"
+    },
+    {
+      "file": "dist/msrmusictool-0.2.0.tar.gz",
+      "sha256": "80ffbc333cd64f801e068b2a45453b15310b22f113ceed68f0e26ff4ffd8163a"
+    }
+  ],
+  "evidence": [
+    {
+      "source": "build/acceptance-tests.xml",
+      "backup": "docs/testing/assets/0.2.0/python314.xml",
+      "source_sha256": "ba02974ded594794293b87d3ff62e811bfb46e6c0890a87264e5d04d3e39595b",
+      "backup_sha256": "ba02974ded594794293b87d3ff62e811bfb46e6c0890a87264e5d04d3e39595b"
+    },
+    {
+      "source": "build/acceptance-python311.xml",
+      "backup": "docs/testing/assets/0.2.0/python311.xml",
+      "source_sha256": "5f2593f9ecc400228a79cabdc63e141441a68437760adc5964464090e76e0a6b",
+      "backup_sha256": "5f2593f9ecc400228a79cabdc63e141441a68437760adc5964464090e76e0a6b"
+    },
+    {
+      "source": "build/standalone-acceptance.json",
+      "backup": "docs/testing/assets/0.2.0/standalone.json",
+      "source_sha256": "9cfa6c05b88ac958e1001de79640b5351836730f61430f822bbaa122396785b6",
+      "backup_sha256": "9cfa6c05b88ac958e1001de79640b5351836730f61430f822bbaa122396785b6"
+    },
+    {
+      "source": "build/wheel-acceptance.json",
+      "backup": "docs/testing/assets/0.2.0/wheel.json",
+      "source_sha256": "8c608866f5e0611b1010157718483d65b4eb11b50ddce01d8dc6db05387c0df2",
+      "backup_sha256": "8c608866f5e0611b1010157718483d65b4eb11b50ddce01d8dc6db05387c0df2"
+    },
+    {
+      "source": "build/windows-tui-final.xml",
+      "backup": "docs/testing/assets/0.2.0/windows-tui-final.xml",
+      "source_sha256": "e934a9e08d313a5e656a88c4f9522d6011abb11dd335454370e3ea89f946abfe",
+      "backup_sha256": "e934a9e08d313a5e656a88c4f9522d6011abb11dd335454370e3ea89f946abfe"
+    }
+  ],
+  "live_artifact_environment": {
+    "NO_PROXY": "monster-siren.hypergryph.com,.hycdn.cn,127.0.0.1,localhost"
+  },
+  "verification_limits": [
+    "Linux verified using WSL2 Arch Linux; macOS was not executed locally",
+    "Python 3.11 optional live contract test was skipped; Python 3.14 live contract passed",
+    "Proxy TLS EOF occurred during earlier live verification; final artifact verification used direct connections",
+    "Linux standalone built with glibc 2.44; older glibc distributions were not verified"
+  ],
+  "linux": {
+    "date": "2026-10-01T22:35:12.089111+08:00",
+    "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.44",
+    "python": "3.14.7",
+    "minimum_python_verified": "3.11.16",
+    "libc": [
+      "glibc",
+      "2.44"
+    ],
+    "engines": [
+      {
+        "file": "build/engines/aria2/usr/bin/aria2c",
+        "sha256": "d4b31feb2fb58ba911367ac71a3c6621b9a127cc8e4a163be53748bc10a59aaf"
+      },
+      {
+        "file": "build/engines/aria2/usr/lib/libaria2.so.0",
+        "sha256": "d7f0cc9c84fb932c8f7e6e366449b19b76242228baa6c36b6d43d041f206ab88"
+      },
+      {
+        "file": "build/engines/aria2-next",
+        "sha256": "a20808838e9350558b36dcaf3f41e8ec9698ab4affacfe14481574516cb99b5e"
+      },
+      {
+        "file": "build/engines/packages/aria2-1.37.0-3-x86_64.pkg.tar.zst",
+        "sha256": "fd887fd41933137da7260522d62198ab9f9a5f1cf7fbceeb9127f29c1e98aad3"
+      }
+    ],
+    "evidence": [
+      {
+        "source": "build/wsl-acceptance/linux-python314.xml",
+        "backup": "docs/testing/assets/0.2.0/linux-python314.xml",
+        "source_sha256": "801ca03e73e0ebc14996f45c36c861aadaae2f5a2cca528e82b1b7bbe29be4bc",
+        "backup_sha256": "801ca03e73e0ebc14996f45c36c861aadaae2f5a2cca528e82b1b7bbe29be4bc"
+      },
+      {
+        "source": "build/wsl-acceptance/linux-python311.xml",
+        "backup": "docs/testing/assets/0.2.0/linux-python311.xml",
+        "source_sha256": "abe88c5c758a7b99ceacd17b4ae5f49eeec9b58f6d72636c1d59de97d9f94f62",
+        "backup_sha256": "abe88c5c758a7b99ceacd17b4ae5f49eeec9b58f6d72636c1d59de97d9f94f62"
+      },
+      {
+        "source": "build/wsl-acceptance/linux-standalone.json",
+        "backup": "docs/testing/assets/0.2.0/linux-standalone.json",
+        "source_sha256": "12c3a54a01ed319335d12b309bcc6f7ba166ebe06ccaa3986860b379bf7367af",
+        "backup_sha256": "12c3a54a01ed319335d12b309bcc6f7ba166ebe06ccaa3986860b379bf7367af"
+      },
+      {
+        "source": "build/wsl-acceptance/linux-wheel.json",
+        "backup": "docs/testing/assets/0.2.0/linux-wheel.json",
+        "source_sha256": "fe62658c4438d76d49f706fbc2da5b442c35e43a7a41208146a827c1490be25c",
+        "backup_sha256": "fe62658c4438d76d49f706fbc2da5b442c35e43a7a41208146a827c1490be25c"
+      },
+      {
+        "source": "build/wsl-acceptance/linux-environment.json",
+        "backup": "docs/testing/assets/0.2.0/linux-environment.json",
+        "source_sha256": "81546de3b62a8839785a3df0671442dc989497fe5ad767b6acab3e126ad6733c",
+        "backup_sha256": "81546de3b62a8839785a3df0671442dc989497fe5ad767b6acab3e126ad6733c"
+      }
+    ],
+    "artifacts": [
+      {
+        "file": "release/msr-tool-linux-x86_64",
+        "sha256": "26ec8218bed1758c2fce3ac0122f8cb6c61d594d589d576617b9e893752aa56f"
+      },
+      {
+        "file": "WSL:dist/msrmusictool-0.2.0-py3-none-any.whl",
+        "sha256": "9c1437e7b6032b0f0d2aacedb0eb81f62a14c6cc91965547a13e9f7c4ec19da9"
+      }
+    ],
+    "environment": {
+      "UV_NO_CONFIG": "1",
+      "NO_PROXY": "monster-siren.hypergryph.com,.hycdn.cn,127.0.0.1,localhost"
+    }
+  }
+}

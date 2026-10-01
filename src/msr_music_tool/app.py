@@ -23,6 +23,7 @@ from textual.widgets import (
     ListView,
     ProgressBar,
     RichLog,
+    Select,
     Static,
 )
 
@@ -37,20 +38,23 @@ from .downloader import (
     SongDownloadResult,
     SongOutcome,
 )
-from .models import AlbumDetail, AlbumDownload, AlbumMatch, SelectionState, SongSummary
+from .models import (
+    AlbumDetail,
+    AlbumDownload,
+    AlbumMatch,
+    DownloadMode,
+    SelectionState,
+    SongSummary,
+)
 from .naming import FileNamer
+from .progress import ProgressState
+from .service import http_client, prepare_downloads
 from .site import MonsterSirenClient
-
-HTTP_TIMEOUT = httpx.Timeout(60.0, connect=10.0, read=60.0, write=60.0, pool=10.0)
-USER_AGENT = "MSRMusicTool/0.1 (+https://monster-siren.hypergryph.com/music)"
+from .transfers import ResourceProgress
 
 
 def _http_client() -> httpx.AsyncClient:
-    return httpx.AsyncClient(
-        timeout=HTTP_TIMEOUT,
-        follow_redirects=True,
-        headers={"User-Agent": USER_AGENT},
-    )
+    return http_client()
 
 
 class AlbumListItem(ListItem):
@@ -341,6 +345,16 @@ class ConfirmScreen(Screen[None]):
         yield Static("确认下载", classes="screen-title")
         with VerticalScroll(id="confirmation-list"):
             yield Static(_confirmation_markup(msr_app.prepared_downloads))
+        yield Select(
+            [
+                ("全部：音频、歌词、封面", "all"),
+                ("仅音频", "audio"),
+                ("音频与歌词", "audio-lyrics"),
+            ],
+            value=msr_app.download_mode.value,
+            allow_blank=False,
+            id="download-mode",
+        )
         with Horizontal(classes="button-row"):
             yield Button("取消", id="cancel")
             yield Button("确认下载", id="confirm")
@@ -363,6 +377,8 @@ class ConfirmScreen(Screen[None]):
         if event.button.id == "cancel":
             self.action_cancel()
         elif event.button.id == "confirm":
+            value = self.query_one("#download-mode", Select).value
+            cast(MonsterSirenApp, self.app).download_mode = DownloadMode(str(value))
             self.app.switch_screen(DownloadScreen())
 
 
@@ -374,13 +390,19 @@ class DownloadScreen(Screen[None]):
 
     def compose(self) -> ComposeResult:
         total = sum(len(item.songs) for item in cast(MonsterSirenApp, self.app).prepared_downloads)
+        self.state = ProgressState(total)
+        self.frame = 0
+        self.downloader: BatchDownloader | None = None
         yield Header(show_clock=False)
         yield Static("正在下载", classes="screen-title")
-        yield ProgressBar(total=total, id="download-progress")
+        yield ProgressBar(total=None, id="download-progress")
         yield Static(f"0/{total}", id="download-status")
-        yield RichLog(id="download-log", wrap=True, markup=True)
+        with VerticalScroll(id="resource-list"):
+            yield Static("正在准备资源……", id="resource-status")
+        yield RichLog(id="download-log", wrap=True, markup=False)
 
     def on_mount(self) -> None:
+        self.set_interval(0.2, self._refresh_progress)
         self.app.call_after_refresh(self._start_download)
 
     def _start_download(self) -> None:
@@ -391,20 +413,29 @@ class DownloadScreen(Screen[None]):
         try:
             async with _http_client() as http:
                 site = MonsterSirenClient(http)
-                downloader = BatchDownloader(
+                self.downloader = BatchDownloader(
                     site,
                     http,
                     msr_app.config.download_dir,
                     cast(FileNamer, msr_app.namer),
+                    config=msr_app.config,
+                    mode=msr_app.download_mode,
                 )
-                result = await downloader.execute(
+                result = await self.downloader.execute(
                     msr_app.prepared_downloads,
                     progress=self._update_progress,
+                    resource_progress=self._update_resource,
                 )
+        except asyncio.CancelledError:
+            raise
         except Exception as exc:
             result = _fatal_batch_result(
                 msr_app.prepared_downloads, msr_app.config.download_dir, exc
             )
+        finally:
+            if self.downloader:
+                msr_app.unresolved_gids = getattr(self.downloader, "unresolved_gids", ())
+        self._refresh_progress()
         self.post_message(self.Finished(result))
 
     @on(Finished)
@@ -417,14 +448,26 @@ class DownloadScreen(Screen[None]):
         self.app.switch_screen(ResultScreen(result))
 
     def _update_progress(self, update: DownloadProgress) -> None:
-        self.query_one("#download-progress", ProgressBar).update(progress=update.completed)
-        outcome = _outcome_text(update.outcome)
-        self.query_one("#download-status", Static).update(
-            f"{update.completed}/{update.total}  {escape(update.song.name)}：{outcome}"
+        self.state.completed_songs = update.completed
+        self.state.logs.append(f"{update.song.name}：{_outcome_text(update.outcome)}")
+
+    def _update_resource(self, update: ResourceProgress) -> None:
+        self.state.update(update)
+
+    def _refresh_progress(self) -> None:
+        if not self.is_mounted:
+            return
+        downloaded, total, _speed = self.state.totals
+        self.query_one("#download-progress", ProgressBar).update(total=total, progress=downloaded)
+        lines = self.state.lines(
+            cast(MonsterSirenApp, self.app).config.progress_style, frame=self.frame
         )
-        self.query_one("#download-log", RichLog).write(
-            f"{_outcome_icon(update.outcome)} {escape(update.song.name)}  {outcome}"
-        )
+        self.frame += 1
+        self.query_one("#download-status", Static).update(escape(lines[0]))
+        self.query_one("#resource-status", Static).update(escape("\n".join(lines[1:])))
+        log = self.query_one("#download-log", RichLog)
+        while self.state.logs:
+            log.write(self.state.logs.popleft())
 
 
 class ResultScreen(Screen[None]):
@@ -504,8 +547,18 @@ class MonsterSirenApp(App[None]):
         self.prepared_downloads: tuple[AlbumDownload, ...] = ()
         self.last_result: BatchResult | None = None
         self._loading = False
+        self.download_mode = DownloadMode.ALL
+        self.unresolved_gids: tuple[str, ...] = ()
+        self._quitting = False
 
-    def action_force_quit(self) -> None:
+    async def action_force_quit(self) -> None:
+        if self._quitting:
+            return
+        self._quitting = True
+        workers = list(self.workers)
+        for worker in workers:
+            worker.cancel()
+        await asyncio.gather(*(worker.wait() for worker in workers), return_exceptions=True)
         self.exit()
 
     async def on_mount(self) -> None:
@@ -549,32 +602,21 @@ class MonsterSirenApp(App[None]):
     async def prepare_downloads(self) -> tuple[AlbumDownload, ...]:
         if self.catalog is None or self.selection is None:
             return ()
-        album_cids = [
-            album.cid
-            for album in self.catalog.albums
-            if any(
-                song.cid in self.selection.selected
-                for song in self.catalog.songs_by_album.get(album.cid, ())
+        ids = [song.cid for song in self.catalog.songs if song.cid in self.selection.selected]
+        async with _http_client() as http:
+            prepared = await prepare_downloads(
+                MonsterSirenClient(http),
+                self.catalog,
+                ids,
+                self.config.download_dir,
+                cache=self.album_cache,
+                concurrency=self.config.max_concurrent_downloads,
             )
-        ]
-        semaphore = asyncio.Semaphore(4)
-
-        async def fetch(cid: str) -> AlbumDetail:
-            async with semaphore:
-                return await self.get_album_detail(cid)
-
-        details = await asyncio.gather(*(fetch(cid) for cid in album_cids))
-        prepared: list[AlbumDownload] = []
-        found: set[str] = set()
-        for detail in details:
-            songs = tuple(song for song in detail.songs if song.cid in self.selection.selected)
-            found.update(song.cid for song in songs)
-            if songs:
-                prepared.append(AlbumDownload(detail, songs))
-        missing = self.selection.selected - found
-        if missing:
-            raise RuntimeError(f"官网详情中缺少 {len(missing)} 首已选歌曲，请刷新索引后重试")
-        return tuple(prepared)
+        if prepared.failures:
+            raise RuntimeError(
+                "；".join(error for result in prepared.failures for error in result.errors)
+            )
+        return prepared.albums
 
 
 def _current_list_item(view: ListView) -> ListItem | None:

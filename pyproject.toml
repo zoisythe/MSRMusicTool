@@ -4,8 +4,8 @@ build-backend = "hatchling.build"
 
 [project]
 name = "MSRMusicTool"
-version = "0.1.1"
-description = "A Textual TUI for searching and downloading music from Monster Siren Records."
+version = "0.2.0"
+description = "CLI and TUI music downloader for Monster Siren Records, with live progress and RPC."
 readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "MIT" }
@@ -13,6 +13,7 @@ authors = [{ name = "MSRMusicTool contributors" }]
 dependencies = [
   "httpx[socks]>=0.28,<1",
   "platformdirs>=4.3,<5",
+  "rich>=15,<16",
   "textual>=1.0,<9",
 ]
 

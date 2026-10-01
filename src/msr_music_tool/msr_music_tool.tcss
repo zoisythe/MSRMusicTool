@@ -86,3 +86,16 @@ ListItem.--highlight {
     border: round $primary;
     padding: 1;
 }
+
+#download-mode {
+    margin: 0 2;
+}
+
+#resource-list {
+    height: 1fr;
+    margin: 0 2;
+}
+
+#resource-status {
+    height: auto;
+}

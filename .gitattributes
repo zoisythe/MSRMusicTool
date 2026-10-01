@@ -1,0 +1,2 @@
+# Preserve raw acceptance reports so their archived SHA-256 hashes survive checkout.
+docs/testing/assets/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol

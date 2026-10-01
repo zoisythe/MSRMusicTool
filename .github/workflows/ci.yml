@@ -25,3 +25,28 @@ jobs:
       - run: uv run pre-commit run --all-files --show-diff-on-failure
       - run: uv run pytest
       - run: uv build
+
+  rpc-acceptance:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: astral-sh/setup-uv@v9.0.0
+        with:
+          version: "0.12.1"
+      - run: uv sync --frozen --dev
+      - name: Download pinned real engines
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release download release-1.37.0 --repo aria2/aria2 --pattern aria2-1.37.0-win-64bit-build1.zip --dir build/engines/aria2
+          gh release download v2.8.3 --repo AnInsomniacy/aria2-next --pattern aria2-next-2.8.3-windows-x86_64.exe --dir build/engines/next
+          Expand-Archive -LiteralPath build/engines/aria2/aria2-1.37.0-win-64bit-build1.zip -DestinationPath build/engines/aria2/extracted
+          $actual = (Get-FileHash build/engines/next/aria2-next-2.8.3-windows-x86_64.exe -Algorithm SHA256).Hash.ToLower()
+          if ($actual -ne '08afaf2a44811d38e7ce538da719ab06d6925bcaad1231ee7b92c497f58e5aac') { throw 'Aria2 Next checksum mismatch' }
+      - name: Run real-engine acceptance
+        shell: pwsh
+        run: |
+          $env:MSR_ARIA2_BINARY = (Get-ChildItem build/engines/aria2/extracted -Recurse -Filter aria2c.exe | Select-Object -First 1).FullName
+          $env:MSR_ARIA_NEXT_BINARY = (Resolve-Path build/engines/next/aria2-next-2.8.3-windows-x86_64.exe).Path
+          uv run --no-sync pytest tests/test_e2e.py -k real_engine -q

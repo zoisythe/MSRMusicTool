@@ -1,0 +1,98 @@
+{
+  "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.44",
+  "artifact": "/home/zoisythe/msr-020-wsl-G2PeSs/release/msr-tool-linux-x86_64",
+  "version": "msr-tool 0.2.0",
+  "artifact_sha256": "26ec8218bed1758c2fce3ac0122f8cb6c61d594d589d576617b9e893752aa56f",
+  "live": true,
+  "files": [
+    {
+      "name": "塞壬唱片-MSR - 月明人间.lrc",
+      "bytes": 48,
+      "sha256": "63fafa141884378408d6198e712427c00fdae6423873b156954c5df2f449ecc3"
+    },
+    {
+      "name": "塞壬唱片-MSR - 月明人间.png",
+      "bytes": 188445,
+      "sha256": "6a7d138bdcaf8eaf1b14fbefee0557fd6902b5139340ffe107ee5668fad7c0b5"
+    },
+    {
+      "name": "塞壬唱片-MSR - 月明人间.wav",
+      "bytes": 59136080,
+      "sha256": "4a6b8c635326607694e400ff34f932e56781efe6c41cfdee25189c82defdada5"
+    }
+  ],
+  "checks": [
+    {
+      "arguments": [
+        "--help"
+      ],
+      "exit_code": 0,
+      "stdout": "usage: msr-tool [-h] [--version] [--config CONFIG] [--output OUTPUT]\n                {search,download} ...\n\n搜索并批量下载塞壬唱片音乐、歌词和封面；无子命令启动 TUI。\n\npositional arguments:\n  {search,download}\n    search           搜索名称、六位 ID 或官网链接\n    download         按六位歌曲 ID 下载\n\noptions:\n  -h, --help         show this help message and exit\n  --version          show program's version number and exit\n  --config CONFIG    TOML 配置文件\n  --output OUTPUT    临时覆盖下载目录\n\n配置文件位置：/home/zoisythe/.config/MSRMusicTool/config.toml\n并发、进度风格和 RPC 参数只在 TOML 中配置。\n",
+      "stderr": ""
+    },
+    {
+      "arguments": [
+        "--version"
+      ],
+      "exit_code": 0,
+      "stdout": "msr-tool 0.2.0\n",
+      "stderr": ""
+    },
+    {
+      "arguments": [
+        "download",
+        "not-an-id"
+      ],
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "usage: msr-tool [-h] [--version] [--config CONFIG] [--output OUTPUT]\n                {search,download} ...\nmsr-tool: error: download 仅接受六位 ASCII 数字歌曲 ID：not-an-id\n"
+    },
+    {
+      "arguments": [
+        "download",
+        "111111",
+        "--mode",
+        "invalid"
+      ],
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "usage: msr-tool download [-h] [--config CONFIG] [--output OUTPUT]\n                         [--mode {all,audio,audio-lyrics}]\n                         items [items ...]\nmsr-tool download: error: argument --mode: invalid choice: 'invalid' (choose from 'all', 'audio', 'audio-lyrics')\n"
+    },
+    {
+      "arguments": [
+        "search",
+        "953935",
+        "https://monster-siren.hypergryph.com/m/music/953935",
+        "--config",
+        "/tmp/msr-release-acceptance-bnkialsq/config.toml"
+      ],
+      "exit_code": 0,
+      "stdout": "ID\t歌曲\t专辑\t艺人\t链接\n953935\t月明人间\t月明人间\t塞壬唱片-MSR\thttps://monster-siren.hypergryph.com/music/953935\n",
+      "stderr": ""
+    },
+    {
+      "arguments": [
+        "download",
+        "953935",
+        "--config",
+        "/tmp/msr-release-acceptance-bnkialsq/config.toml"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "0.0 B 0.0 B/s · 歌曲 0/1\n0% 53.3 KiB/56.6 MiB 5.0 MiB/s ETA 11s · 歌曲 0/1\n塞壬唱片-MSR - 月明人间 · 歌词：完成\n1% 533.9 KiB/56.6 MiB 3.1 MiB/s ETA 18s · 歌曲 0/1\n月明人间 · 封面：完成\n1% 728.1 KiB/56.6 MiB 1.7 MiB/s ETA 34s · 歌曲 0/1\n2% 936.1 KiB/56.6 MiB 1005.6 KiB/s ETA 57s · 歌曲 0/1\n2% 1.2 MiB/56.6 MiB 1.0 MiB/s ETA 55s · 歌曲 0/1\n3% 1.4 MiB/56.6 MiB 1.4 MiB/s ETA 40s · 歌曲 0/1\n3% 1.6 MiB/56.6 MiB 1.2 MiB/s ETA 45s · 歌曲 0/1\n3% 1.7 MiB/56.6 MiB 702.4 KiB/s ETA 80s · 歌曲 0/1\n3% 1.8 MiB/56.6 MiB 432.9 KiB/s ETA 130s · 歌曲 0/1\n3% 1.9 MiB/56.6 MiB 516.3 KiB/s ETA 108s · 歌曲 0/1\n4% 2.0 MiB/56.6 MiB 675.4 KiB/s ETA 83s · 歌曲 0/1\n4% 2.1 MiB/56.6 MiB 555.6 KiB/s ETA 100s · 歌曲 0/1\n4% 2.3 MiB/56.6 MiB 659.4 KiB/s ETA 84s · 歌曲 0/1\n4% 2.4 MiB/56.6 MiB 750.0 KiB/s ETA 74s · 歌曲 0/1\n5% 2.6 MiB/56.6 MiB 751.6 KiB/s ETA 74s · 歌曲 0/1\n5% 2.8 MiB/56.6 MiB 959.2 KiB/s ETA 57s · 歌曲 0/1\n5% 3.0 MiB/56.6 MiB 956.8 KiB/s ETA 57s · 歌曲 0/1\n6% 3.2 MiB/56.6 MiB 1.0 MiB/s ETA 51s · 歌曲 0/1\n6% 3.4 MiB/56.6 MiB 1.2 MiB/s ETA 46s · 歌曲 0/1\n6% 3.6 MiB/56.6 MiB 989.3 KiB/s ETA 55s · 歌曲 0/1\n7% 3.7 MiB/56.6 MiB 694.6 KiB/s ETA 78s · 歌曲 0/1\n7% 3.9 MiB/56.6 MiB 620.6 KiB/s ETA 87s · 歌曲 0/1\n7% 4.0 MiB/56.6 MiB 558.3 KiB/s ETA 97s · 歌曲 0/1\n7% 4.1 MiB/56.6 MiB 558.3 KiB/s ETA 96s · 歌曲 0/1\n7% 4.2 MiB/56.6 MiB 594.0 KiB/s ETA 90s · 歌曲 0/1\n8% 4.3 MiB/56.6 MiB 673.1 KiB/s ETA 79s · 歌曲 0/1\n8% 4.4 MiB/56.6 MiB 642.2 KiB/s ETA 83s · 歌曲 0/1\n8% 4.6 MiB/56.6 MiB 611.0 KiB/s ETA 87s · 歌曲 0/1\n9% 4.8 MiB/56.6 MiB 866.3 KiB/s ETA 61s · 歌曲 0/1\n9% 5.2 MiB/56.6 MiB 1.3 MiB/s ETA 41s · 歌曲 0/1\n10% 5.5 MiB/56.6 MiB 1.7 MiB/s ETA 30s · 歌曲 0/1\n10% 5.7 MiB/56.6 MiB 1.4 MiB/s ETA 37s · 歌曲 0/1\n11% 6.0 MiB/56.6 MiB 1.3 MiB/s ETA 38s · 歌曲 0/1\n11% 6.4 MiB/56.6 MiB 1.5 MiB/s ETA 33s · 歌曲 0/1\n12% 6.7 MiB/56.6 MiB 1.7 MiB/s ETA 29s · 歌曲 0/1\n12% 7.0 MiB/56.6 MiB 1.7 MiB/s ETA 29s · 歌曲 0/1\n13% 7.2 MiB/56.6 MiB 1.3 MiB/s ETA 39s · 歌曲 0/1\n13% 7.4 MiB/56.6 MiB 878.5 KiB/s ETA 57s · 歌曲 0/1\n13% 7.5 MiB/56.6 MiB 968.8 KiB/s ETA 52s · 歌曲 0/1\n14% 7.7 MiB/56.6 MiB 797.0 KiB/s ETA 63s · 歌曲 0/1\n14% 7.9 MiB/56.6 MiB 895.4 KiB/s ETA 56s · 歌曲 0/1\n14% 8.0 MiB/56.6 MiB 742.4 KiB/s ETA 67s · 歌曲 0/1\n14% 8.1 MiB/56.6 MiB 621.1 KiB/s ETA 80s · 歌曲 0/1\n15% 8.3 MiB/56.6 MiB 756.6 KiB/s ETA 65s · 歌曲 0/1\n15% 8.5 MiB/56.6 MiB 1.1 MiB/s ETA 44s · 歌曲 0/1\n15% 8.7 MiB/56.6 MiB 982.3 KiB/s ETA 50s · 歌曲 0/1\n16% 8.8 MiB/56.6 MiB 632.7 KiB/s ETA 77s · 歌曲 0/1\n16% 9.0 MiB/56.6 MiB 701.3 KiB/s ETA 70s · 歌曲 0/1\n16% 9.1 MiB/56.6 MiB 701.3 KiB/s ETA 69s · 歌曲 0/1\n16% 9.2 MiB/56.6 MiB 705.4 KiB/s ETA 69s · 歌曲 0/1\n17% 9.4 MiB/56.6 MiB 696.5 KiB/s ETA 69s · 歌曲 0/1\n17% 9.7 MiB/56.6 MiB 1.1 MiB/s ETA 43s · 歌曲 0/1\n17% 9.9 MiB/56.6 MiB 975.3 KiB/s ETA 49s · 歌曲 0/1\n18% 10.0 MiB/56.6 MiB 975.8 KiB/s ETA 49s · 歌曲 0/1\n18% 10.2 MiB/56.6 MiB 956.8 KiB/s ETA 50s · 歌曲 0/1\n18% 10.4 MiB/56.6 MiB 949.5 KiB/s ETA 50s · 歌曲 0/1\n19% 10.6 MiB/56.6 MiB 917.8 KiB/s ETA 51s · 歌曲 0/1\n19% 10.9 MiB/56.6 MiB 1.1 MiB/s ETA 40s · 歌曲 0/1\n20% 11.3 MiB/56.6 MiB 1.7 MiB/s ETA 26s · 歌曲 0/1\n20% 11.5 MiB/56.6 MiB 1.5 MiB/s ETA 30s · 歌曲 0/1\n21% 11.7 MiB/56.6 MiB 1.1 MiB/s ETA 42s · 歌曲 0/1\n21% 11.8 MiB/56.6 MiB 715.3 KiB/s ETA 64s · 歌曲 0/1\n21% 11.9 MiB/56.6 MiB 641.4 KiB/s ETA 71s · 歌曲 0/1\n21% 12.1 MiB/56.6 MiB 859.3 KiB/s ETA 53s · 歌曲 0/1\n22% 12.4 MiB/56.6 MiB 1.1 MiB/s ETA 39s · 歌曲 0/1\n22% 12.6 MiB/56.6 MiB 1.3 MiB/s ETA 34s · 歌曲 0/1\n23% 12.8 MiB/56.6 MiB 1.1 MiB/s ETA 41s · 歌曲 0/1\n23% 13.0 MiB/56.6 MiB 1010.6 KiB/s ETA 44s · 歌曲 0/1\n23% 13.3 MiB/56.6 MiB 1.2 MiB/s ETA 38s · 歌曲 0/1\n24% 13.5 MiB/56.6 MiB 1.0 MiB/s ETA 41s · 歌曲 0/1\n24% 13.7 MiB/56.6 MiB 1.1 MiB/s ETA 39s · 歌曲 0/1\n25% 13.9 MiB/56.6 MiB 1.2 MiB/s ETA 35s · 歌曲 0/1\n25% 14.2 MiB/56.6 MiB 1.2 MiB/s ETA 34s · 歌曲 0/1\n26% 14.4 MiB/56.6 MiB 1.2 MiB/s ETA 35s · 歌曲 0/1\n26% 14.6 MiB/56.6 MiB 956.8 KiB/s ETA 45s · 歌曲 0/1\n26% 14.7 MiB/56.6 MiB 956.8 KiB/s ETA 45s · 歌曲 0/1\n26% 14.9 MiB/56.6 MiB 669.5 KiB/s ETA 64s · 歌曲 0/1\n26% 15.0 MiB/56.6 MiB 732.2 KiB/s ETA 58s · 歌曲 0/1\n27% 15.2 MiB/56.6 MiB 591.5 KiB/s ETA 72s · 歌曲 0/1\n27% 15.4 MiB/56.6 MiB 910.9 KiB/s ETA 46s · 歌曲 0/1\n28% 15.6 MiB/56.6 MiB 1.2 MiB/s ETA 33s · 歌曲 0/1\n28% 15.8 MiB/56.6 MiB 1.0 MiB/s ETA 39s · 歌曲 0/1\n28% 16.0 MiB/56.6 MiB 1.0 MiB/s ETA 40s · 歌曲 0/1\n29% 16.2 MiB/56.6 MiB 767.0 KiB/s ETA 54s · 歌曲 0/1\n29% 16.3 MiB/56.6 MiB 797.5 KiB/s ETA 52s · 歌曲 0/1\n29% 16.4 MiB/56.6 MiB 605.4 KiB/s ETA 68s · 歌曲 0/1\n29% 16.6 MiB/56.6 MiB 824.2 KiB/s ETA 50s · 歌曲 0/1\n29% 16.6 MiB/56.6 MiB 393.5 KiB/s ETA 104s · 歌曲 0/1\n30% 16.7 MiB/56.6 MiB 469.3 KiB/s ETA 87s · 歌曲 0/1\n30% 16.9 MiB/56.6 MiB 1.0 MiB/s ETA 39s · 歌曲 0/1\n30% 17.2 MiB/56.6 MiB 1.4 MiB/s ETA 29s · 歌曲 0/1\n31% 17.6 MiB/56.6 MiB 1.7 MiB/s ETA 23s · 歌曲 0/1\n32% 18.0 MiB/56.6 MiB 2.1 MiB/s ETA 18s · 歌曲 0/1\n32% 18.3 MiB/56.6 MiB 2.1 MiB/s ETA 18s · 歌曲 0/1\n33% 18.4 MiB/56.6 MiB 1.2 MiB/s ETA 32s · 歌曲 0/1\n33% 18.6 MiB/56.6 MiB 924.0 KiB/s ETA 42s · 歌曲 0/1\n33% 18.8 MiB/56.6 MiB 1.0 MiB/s ETA 37s · 歌曲 0/1\n34% 19.0 MiB/56.6 MiB 941.0 KiB/s ETA 41s · 歌曲 0/1\n34% 19.1 MiB/56.6 MiB 642.9 KiB/s ETA 60s · 歌曲 0/1\n34% 19.3 MiB/56.6 MiB 728.3 KiB/s ETA 52s · 歌曲 0/1\n34% 19.4 MiB/56.6 MiB 866.3 KiB/s ETA 44s · 歌曲 0/1\n35% 19.6 MiB/56.6 MiB 924.8 KiB/s ETA 41s · 歌曲 0/1\n35% 19.7 MiB/56.6 MiB 703.7 KiB/s ETA 54s · 歌曲 0/1\n35% 19.9 MiB/56.6 MiB 622.1 KiB/s ETA 60s · 歌曲 0/1\n35% 20.0 MiB/56.6 MiB 796.8 KiB/s ETA 47s · 歌曲 0/1\n36% 20.1 MiB/56.6 MiB 745.9 KiB/s ETA 50s · 歌曲 0/1\n36% 20.3 MiB/56.6 MiB 741.2 KiB/s ETA 50s · 歌曲 0/1\n36% 20.5 MiB/56.6 MiB 836.2 KiB/s ETA 44s · 歌曲 0/1\n37% 20.7 MiB/56.6 MiB 1.0 MiB/s ETA 36s · 歌曲 0/1\n37% 21.0 MiB/56.6 MiB 1.3 MiB/s ETA 28s · 歌曲 0/1\n37% 21.2 MiB/56.6 MiB 1.2 MiB/s ETA 28s · 歌曲 0/1\n38% 21.4 MiB/56.6 MiB 923.1 KiB/s ETA 39s · 歌曲 0/1\n38% 21.6 MiB/56.6 MiB 1.0 MiB/s ETA 35s · 歌曲 0/1\n39% 21.8 MiB/56.6 MiB 1.2 MiB/s ETA 30s · 歌曲 0/1\n39% 22.1 MiB/56.6 MiB 1.2 MiB/s ETA 30s · 歌曲 0/1\n40% 22.4 MiB/56.6 MiB 1.4 MiB/s ETA 24s · 歌曲 0/1\n40% 22.6 MiB/56.6 MiB 1.4 MiB/s ETA 24s · 歌曲 0/1\n40% 22.7 MiB/56.6 MiB 829.4 KiB/s ETA 42s · 歌曲 0/1\n40% 22.9 MiB/56.6 MiB 710.7 KiB/s ETA 49s · 歌曲 0/1\n41% 23.1 MiB/56.6 MiB 940.3 KiB/s ETA 36s · 歌曲 0/1\n41% 23.2 MiB/56.6 MiB 913.6 KiB/s ETA 37s · 歌曲 0/1\n41% 23.3 MiB/56.6 MiB 581.1 KiB/s ETA 59s · 歌曲 0/1\n42% 23.5 MiB/56.6 MiB 816.1 KiB/s ETA 41s · 歌曲 0/1\n42% 23.7 MiB/56.6 MiB 997.4 KiB/s ETA 34s · 歌曲 0/1\n42% 23.9 MiB/56.6 MiB 1.2 MiB/s ETA 28s · 歌曲 0/1\n43% 24.1 MiB/56.6 MiB 1.0 MiB/s ETA 32s · 歌曲 0/1\n43% 24.4 MiB/56.6 MiB 1.1 MiB/s ETA 30s · 歌曲 0/1\n43% 24.5 MiB/56.6 MiB 854.6 KiB/s ETA 38s · 歌曲 0/1\n44% 24.7 MiB/56.6 MiB 772.5 KiB/s ETA 42s · 歌曲 0/1\n44% 24.9 MiB/56.6 MiB 1.2 MiB/s ETA 27s · 歌曲 0/1\n45% 25.2 MiB/56.6 MiB 1.4 MiB/s ETA 22s · 歌曲 0/1\n45% 25.4 MiB/56.6 MiB 1.1 MiB/s ETA 27s · 歌曲 0/1\n45% 25.6 MiB/56.6 MiB 1.1 MiB/s ETA 29s · 歌曲 0/1\n46% 25.9 MiB/56.6 MiB 1.2 MiB/s ETA 26s · 歌曲 0/1\n46% 26.2 MiB/56.6 MiB 1.5 MiB/s ETA 20s · 歌曲 0/1\n47% 26.4 MiB/56.6 MiB 1.5 MiB/s ETA 20s · 歌曲 0/1\n47% 26.7 MiB/56.6 MiB 1.3 MiB/s ETA 24s · 歌曲 0/1\n48% 27.0 MiB/56.6 MiB 1.1 MiB/s ETA 27s · 歌曲 0/1\n48% 27.3 MiB/56.6 MiB 1.8 MiB/s ETA 16s · 歌曲 0/1\n49% 27.6 MiB/56.6 MiB 1.5 MiB/s ETA 20s · 歌曲 0/1\n49% 27.9 MiB/56.6 MiB 1.7 MiB/s ETA 17s · 歌曲 0/1\n50% 28.1 MiB/56.6 MiB 1.1 MiB/s ETA 26s · 歌曲 0/1\n50% 28.3 MiB/56.6 MiB 1.2 MiB/s ETA 24s · 歌曲 0/1\n50% 28.4 MiB/56.6 MiB 651.9 KiB/s ETA 44s · 歌曲 0/1\n50% 28.5 MiB/56.6 MiB 365.1 KiB/s ETA 79s · 歌曲 0/1\n50% 28.5 MiB/56.6 MiB 326.0 KiB/s ETA 88s · 歌曲 0/1\n51% 28.6 MiB/56.6 MiB 503.8 KiB/s ETA 57s · 歌曲 0/1\n51% 28.7 MiB/56.6 MiB 516.5 KiB/s ETA 55s · 歌曲 0/1\n51% 28.9 MiB/56.6 MiB 704.1 KiB/s ETA 40s · 歌曲 0/1\n51% 29.1 MiB/56.6 MiB 704.1 KiB/s ETA 40s · 歌曲 0/1\n52% 29.2 MiB/56.6 MiB 862.0 KiB/s ETA 32s · 歌曲 0/1\n52% 29.5 MiB/56.6 MiB 861.3 KiB/s ETA 32s · 歌曲 0/1\n52% 29.6 MiB/56.6 MiB 1.2 MiB/s ETA 23s · 歌曲 0/1\n53% 29.8 MiB/56.6 MiB 986.5 KiB/s ETA 28s · 歌曲 0/1\n53% 30.0 MiB/56.6 MiB 875.1 KiB/s ETA 31s · 歌曲 0/1\n53% 30.1 MiB/56.6 MiB 665.6 KiB/s ETA 41s · 歌曲 0/1\n54% 30.3 MiB/56.6 MiB 976.7 KiB/s ETA 28s · 歌曲 0/1\n54% 30.5 MiB/56.6 MiB 978.1 KiB/s ETA 27s · 歌曲 0/1\n54% 30.7 MiB/56.6 MiB 845.9 KiB/s ETA 31s · 歌曲 0/1\n55% 30.9 MiB/56.6 MiB 1.1 MiB/s ETA 24s · 歌曲 0/1\n55% 31.1 MiB/56.6 MiB 1.1 MiB/s ETA 23s · 歌曲 0/1\n55% 31.4 MiB/56.6 MiB 1.2 MiB/s ETA 21s · 歌曲 0/1\n56% 31.7 MiB/56.6 MiB 1.4 MiB/s ETA 18s · 歌曲 0/1\n56% 31.9 MiB/56.6 MiB 1.0 MiB/s ETA 24s · 歌曲 0/1\n57% 32.1 MiB/56.6 MiB 985.0 KiB/s ETA 25s · 歌曲 0/1\n57% 32.3 MiB/56.6 MiB 1.2 MiB/s ETA 20s · 歌曲 0/1\n57% 32.5 MiB/56.6 MiB 1.0 MiB/s ETA 23s · 歌曲 0/1\n58% 32.8 MiB/56.6 MiB 1.4 MiB/s ETA 17s · 歌曲 0/1\n58% 33.0 MiB/56.6 MiB 1007.5 KiB/s ETA 24s · 歌曲 0/1\n59% 33.2 MiB/56.6 MiB 947.3 KiB/s ETA 25s · 歌曲 0/1\n59% 33.4 MiB/56.6 MiB 1018.1 KiB/s ETA 23s · 歌曲 0/1\n59% 33.6 MiB/56.6 MiB 1.0 MiB/s ETA 23s · 歌曲 0/1\n60% 33.7 MiB/56.6 MiB 776.3 KiB/s ETA 30s · 歌曲 0/1\n60% 34.0 MiB/56.6 MiB 776.3 KiB/s ETA 30s · 歌曲 0/1\n60% 34.2 MiB/56.6 MiB 1.2 MiB/s ETA 19s · 歌曲 0/1\n61% 34.4 MiB/56.6 MiB 1.2 MiB/s ETA 19s · 歌曲 0/1\n61% 34.6 MiB/56.6 MiB 1.0 MiB/s ETA 22s · 歌曲 0/1\n62% 34.9 MiB/56.6 MiB 1.0 MiB/s ETA 21s · 歌曲 0/1\n62% 35.2 MiB/56.6 MiB 1.6 MiB/s ETA 13s · 歌曲 0/1\n63% 35.4 MiB/56.6 MiB 1.2 MiB/s ETA 17s · 歌曲 0/1\n63% 35.6 MiB/56.6 MiB 1.1 MiB/s ETA 18s · 歌曲 0/1\n63% 35.9 MiB/56.6 MiB 1.2 MiB/s ETA 18s · 歌曲 0/1\n64% 36.1 MiB/56.6 MiB 1.1 MiB/s ETA 19s · 歌曲 0/1\n64% 36.4 MiB/56.6 MiB 1.2 MiB/s ETA 17s · 歌曲 0/1\n65% 36.6 MiB/56.6 MiB 1.3 MiB/s ETA 15s · 歌曲 0/1\n65% 36.9 MiB/56.6 MiB 1.5 MiB/s ETA 13s · 歌曲 0/1\n66% 37.2 MiB/56.6 MiB 1.6 MiB/s ETA 12s · 歌曲 0/1\n66% 37.6 MiB/56.6 MiB 1.4 MiB/s ETA 14s · 歌曲 0/1\n67% 37.9 MiB/56.6 MiB 1.6 MiB/s ETA 11s · 歌曲 0/1\n67% 38.1 MiB/56.6 MiB 1.2 MiB/s ETA 15s · 歌曲 0/1\n68% 38.4 MiB/56.6 MiB 1.2 MiB/s ETA 15s · 歌曲 0/1\n68% 38.6 MiB/56.6 MiB 1.4 MiB/s ETA 13s · 歌曲 0/1\n69% 38.9 MiB/56.6 MiB 1.4 MiB/s ETA 13s · 歌曲 0/1\n69% 39.2 MiB/56.6 MiB 1.3 MiB/s ETA 13s · 歌曲 0/1\n70% 39.4 MiB/56.6 MiB 1020.7 KiB/s ETA 17s · 歌曲 0/1\n70% 39.7 MiB/56.6 MiB 1.7 MiB/s ETA 10s · 歌曲 0/1\n71% 39.9 MiB/56.6 MiB 1.7 MiB/s ETA 10s · 歌曲 0/1\n71% 40.1 MiB/56.6 MiB 1.2 MiB/s ETA 14s · 歌曲 0/1\n71% 40.4 MiB/56.6 MiB 915.1 KiB/s ETA 18s · 歌曲 0/1\n72% 40.6 MiB/56.6 MiB 1.3 MiB/s ETA 12s · 歌曲 0/1\n72% 40.9 MiB/56.6 MiB 1.2 MiB/s ETA 13s · 歌曲 0/1\n73% 41.2 MiB/56.6 MiB 1.4 MiB/s ETA 11s · 歌曲 0/1\n73% 41.4 MiB/56.6 MiB 1.3 MiB/s ETA 12s · 歌曲 0/1\n73% 41.6 MiB/56.6 MiB 1.1 MiB/s ETA 14s · 歌曲 0/1\n74% 41.7 MiB/56.6 MiB 850.6 KiB/s ETA 18s · 歌曲 0/1\n74% 41.9 MiB/56.6 MiB 544.2 KiB/s ETA 28s · 歌曲 0/1\n74% 42.1 MiB/56.6 MiB 1.1 MiB/s ETA 14s · 歌曲 0/1\n75% 42.4 MiB/56.6 MiB 1.3 MiB/s ETA 11s · 歌曲 0/1\n75% 42.5 MiB/56.6 MiB 992.9 KiB/s ETA 15s · 歌曲 0/1\n75% 42.7 MiB/56.6 MiB 699.1 KiB/s ETA 20s · 歌曲 0/1\n76% 42.8 MiB/56.6 MiB 829.0 KiB/s ETA 17s · 歌曲 0/1\n76% 42.9 MiB/56.6 MiB 631.3 KiB/s ETA 22s · 歌曲 0/1\n76% 43.1 MiB/56.6 MiB 744.4 KiB/s ETA 19s · 歌曲 0/1\n76% 43.2 MiB/56.6 MiB 679.7 KiB/s ETA 20s · 歌曲 0/1\n77% 43.4 MiB/56.6 MiB 622.8 KiB/s ETA 22s · 歌曲 0/1\n77% 43.6 MiB/56.6 MiB 1.1 MiB/s ETA 12s · 歌曲 0/1\n78% 43.9 MiB/56.6 MiB 1.3 MiB/s ETA 10s · 歌曲 0/1\n78% 44.1 MiB/56.6 MiB 1.5 MiB/s ETA 8s · 歌曲 0/1\n78% 44.3 MiB/56.6 MiB 1.0 MiB/s ETA 12s · 歌曲 0/1\n79% 44.5 MiB/56.6 MiB 1.0 MiB/s ETA 11s · 歌曲 0/1\n79% 44.7 MiB/56.6 MiB 1.1 MiB/s ETA 11s · 歌曲 0/1\n79% 45.0 MiB/56.6 MiB 1.0 MiB/s ETA 11s · 歌曲 0/1\n80% 45.2 MiB/56.6 MiB 1.0 MiB/s ETA 11s · 歌曲 0/1\n80% 45.4 MiB/56.6 MiB 992.5 KiB/s ETA 12s · 歌曲 0/1\n81% 45.6 MiB/56.6 MiB 992.5 KiB/s ETA 11s · 歌曲 0/1\n81% 45.9 MiB/56.6 MiB 1.2 MiB/s ETA 9s · 歌曲 0/1\n81% 46.1 MiB/56.6 MiB 1.4 MiB/s ETA 8s · 歌曲 0/1\n82% 46.3 MiB/56.6 MiB 959.2 KiB/s ETA 11s · 歌曲 0/1\n82% 46.5 MiB/56.6 MiB 933.1 KiB/s ETA 11s · 歌曲 0/1\n83% 46.9 MiB/56.6 MiB 1.3 MiB/s ETA 7s · 歌曲 0/1\n84% 47.3 MiB/56.6 MiB 2.1 MiB/s ETA 5s · 歌曲 0/1\n84% 47.5 MiB/56.6 MiB 1.6 MiB/s ETA 6s · 歌曲 0/1\n84% 47.7 MiB/56.6 MiB 1.1 MiB/s ETA 8s · 歌曲 0/1\n85% 48.0 MiB/56.6 MiB 1.3 MiB/s ETA 7s · 歌曲 0/1\n85% 48.3 MiB/56.6 MiB 1.4 MiB/s ETA 6s · 歌曲 0/1\n86% 48.7 MiB/56.6 MiB 1.7 MiB/s ETA 5s · 歌曲 0/1\n86% 48.9 MiB/56.6 MiB 1.7 MiB/s ETA 5s · 歌曲 0/1\n87% 49.0 MiB/56.6 MiB 639.1 KiB/s ETA 12s · 歌曲 0/1\n87% 49.3 MiB/56.6 MiB 981.3 KiB/s ETA 8s · 歌曲 0/1\n88% 49.6 MiB/56.6 MiB 1.3 MiB/s ETA 5s · 歌曲 0/1\n88% 49.8 MiB/56.6 MiB 1.4 MiB/s ETA 5s · 歌曲 0/1\n89% 50.2 MiB/56.6 MiB 1.6 MiB/s ETA 4s · 歌曲 0/1\n89% 50.5 MiB/56.6 MiB 1.8 MiB/s ETA 3s · 歌曲 0/1\n90% 50.7 MiB/56.6 MiB 1.1 MiB/s ETA 6s · 歌曲 0/1\n90% 50.9 MiB/56.6 MiB 1.0 MiB/s ETA 6s · 歌曲 0/1\n90% 51.1 MiB/56.6 MiB 1.1 MiB/s ETA 5s · 歌曲 0/1\n91% 51.5 MiB/56.6 MiB 1.6 MiB/s ETA 3s · 歌曲 0/1\n91% 51.7 MiB/56.6 MiB 1.3 MiB/s ETA 4s · 歌曲 0/1\n92% 51.9 MiB/56.6 MiB 1.1 MiB/s ETA 4s · 歌曲 0/1\n92% 52.2 MiB/56.6 MiB 1.3 MiB/s ETA 3s · 歌曲 0/1\n93% 52.3 MiB/56.6 MiB 794.8 KiB/s ETA 5s · 歌曲 0/1\n93% 52.6 MiB/56.6 MiB 1.0 MiB/s ETA 4s · 歌曲 0/1\n93% 52.8 MiB/56.6 MiB 1.0 MiB/s ETA 4s · 歌曲 0/1\n94% 53.0 MiB/56.6 MiB 1.2 MiB/s ETA 3s · 歌曲 0/1\n94% 53.4 MiB/56.6 MiB 1.1 MiB/s ETA 3s · 歌曲 0/1\n95% 53.9 MiB/56.6 MiB 2.0 MiB/s ETA 1s · 歌曲 0/1\n96% 54.3 MiB/56.6 MiB 2.6 MiB/s ETA 1s · 歌曲 0/1\n96% 54.5 MiB/56.6 MiB 1.8 MiB/s ETA 1s · 歌曲 0/1\n97% 54.7 MiB/56.6 MiB 973.1 KiB/s ETA 2s · 歌曲 0/1\n97% 54.9 MiB/56.6 MiB 912.3 KiB/s ETA 2s · 歌曲 0/1\n97% 55.1 MiB/56.6 MiB 954.8 KiB/s ETA 2s · 歌曲 0/1\n98% 55.4 MiB/56.6 MiB 1.1 MiB/s ETA 1s · 歌曲 0/1\n98% 55.5 MiB/56.6 MiB 1.3 MiB/s ETA 1s · 歌曲 0/1\n99% 55.8 MiB/56.6 MiB 907.2 KiB/s ETA 1s · 歌曲 0/1\n99% 56.0 MiB/56.6 MiB 1.2 MiB/s ETA 0s · 歌曲 0/1\n99% 56.3 MiB/56.6 MiB 1.4 MiB/s ETA 0s · 歌曲 0/1\n100% 56.5 MiB/56.6 MiB 1021.8 KiB/s ETA 0s · 歌曲 0/1\n100% 56.6 MiB/56.6 MiB 0.0 B/s · 歌曲 1/1\n塞壬唱片-MSR - 月明人间 · 音频：完成\n953935 月明人间：success\n"
+    },
+    {
+      "arguments": [
+        "download",
+        "953935",
+        "--mode",
+        "audio",
+        "--config",
+        "/tmp/msr-release-acceptance-bnkialsq/config.toml"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "0.0 B 0.0 B/s · 歌曲 0/1\n100% 56.4 MiB/56.4 MiB 0.0 B/s · 歌曲 1/1\n塞壬唱片-MSR - 月明人间 · 音频：跳过\n953935 月明人间：skipped\n"
+    }
+  ]
+}

@@ -1,0 +1,165 @@
+{
+  "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.44",
+  "python": "3.14.7",
+  "minimum_python_verified": "3.11.16",
+  "os_release": "NAME=\"Arch Linux\"\nPRETTY_NAME=\"Arch Linux\"\nID=arch\nBUILD_ID=rolling\nANSI_COLOR=\"38;2;23;147;209\"\nHOME_URL=\"https://archlinux.org/\"\nDOCUMENTATION_URL=\"https://wiki.archlinux.org/\"\nSUPPORT_URL=\"https://bbs.archlinux.org/\"\nBUG_REPORT_URL=\"https://gitlab.archlinux.org/groups/archlinux/-/issues\"\nPRIVACY_POLICY_URL=\"https://terms.archlinux.org/docs/privacy-policy/\"\nLOGO=archlinux-logo\n",
+  "libc": [
+    "glibc",
+    "2.44"
+  ],
+  "workspace": "/home/zoisythe/msr-020-wsl-G2PeSs",
+  "engines": [
+    {
+      "file": "build/engines/aria2/usr/bin/aria2c",
+      "sha256": "d4b31feb2fb58ba911367ac71a3c6621b9a127cc8e4a163be53748bc10a59aaf"
+    },
+    {
+      "file": "build/engines/aria2/usr/lib/libaria2.so.0",
+      "sha256": "d7f0cc9c84fb932c8f7e6e366449b19b76242228baa6c36b6d43d041f206ab88"
+    },
+    {
+      "file": "build/engines/aria2-next",
+      "sha256": "a20808838e9350558b36dcaf3f41e8ec9698ab4affacfe14481574516cb99b5e"
+    },
+    {
+      "file": "build/engines/packages/aria2-1.37.0-3-x86_64.pkg.tar.zst",
+      "sha256": "fd887fd41933137da7260522d62198ab9f9a5f1cf7fbceeb9127f29c1e98aad3"
+    }
+  ],
+  "aria2_version": "aria2 version 1.37.0\nCopyright (C) 2006, 2019 Tatsuhiro Tsujikawa\n\nThis program is free software; you can redistribute it and/or modify\nit under the terms of the GNU General Public License as published by\nthe Free Software Foundation; either version 2 of the License, or\n(at your option) any later version.\n\nThis program is distributed in the hope that it will be useful,\nbut WITHOUT ANY WARRANTY; without even the implied warranty of\nMERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\nGNU General Public License for more details.\n\n** Configuration **\nEnabled Features: Async DNS, BitTorrent, Firefox3 Cookie, GZip, HTTPS, Message Digest, Metalink, XML-RPC, SFTP\nHash Algorithms: sha-1, sha-224, sha-256, sha-384, sha-512, md5, adler32\nLibraries: zlib/1.3.2 libxml2/2.15.3 sqlite3/3.53.0 GnuTLS/3.8.13 nettle GMP/6.3.0 c-ares/1.34.6 libssh2/1.11.1\nCompiler: gcc 15.2.1 20260209\n  built by  x86_64-pc-linux-gnu\n  on        Apr 30 2026 21:17:17\nSystem: Linux 6.18.33.2-microsoft-standard-WSL2 #1 SMP PREEMPT_DYNAMIC Thu Jun 18 21:54:43 UTC 2026 x86_64\n\nReport bugs to https://github.com/aria2/aria2/issues\nVisit https://aria2.github.io/\n",
+  "aria_next_version": "Aria2 Next version 2.8.3\nMaintained since 2026 by AnInsomniacy for Rayburst and standalone users.\nOriginal aria2 copyright: 2006, 2019 Tatsuhiro Tsujikawa.\n\nThis program is free software; you can redistribute it and/or modify\nit under the terms of the GNU General Public License as published by\nthe Free Software Foundation; either version 2 of the License, or\n(at your option) any later version.\n\nThis program is distributed in the hope that it will be useful,\nbut WITHOUT ANY WARRANTY; without even the implied warranty of\nMERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\nGNU General Public License for more details.\n\n** Configuration **\nEnabled Features: Async DNS, BitTorrent, ED2K, GZip, HTTPS, Message Digest, Metalink, XML-RPC, SFTP, HLS/DASH\nHash Algorithms: sha-1, sha-224, sha-256, sha-384, sha-512, md5, adler32\nLibraries: GPAC/26.07 FFmpeg/8.1.2 spdlog/1.17.0 libcurl/8.21.0(OpenSSL/3.5.6;threaded DNS) Boost/1.91.0 nghttp2/1.70.0 zlib/1.3.2 expat/2.8.1 sqlite3/3.53.1 OpenSSL/3.5.6 libtorrent/2.1.1\nCompiler: gcc 11.4.0\n  built by  x86_64-Linux\nSystem: Linux 6.18.33.2-microsoft-standard-WSL2 #1 SMP PREEMPT_DYNAMIC Thu Jun 18 21:54:43 UTC 2026 x86_64\n\nReport bugs to https://github.com/AnInsomniacy/aria2-next/issues\nVisit https://github.com/AnInsomniacy/aria2-next\n",
+  "verified_source_files": [
+    {
+      "file": "pyproject.toml",
+      "sha256": "6d45525580970c4c4ad2ee3857a91c2777502e615ed3c141671e5adbdf8d96af"
+    },
+    {
+      "file": "uv.lock",
+      "sha256": "a3205f367298a0f040d2dd453f90beefc607ca3a5e0fd388a39d757b6a142b86"
+    },
+    {
+      "file": "src/msr_music_tool/app.py",
+      "sha256": "e699bd2e850f57c5388454e92eaa14fa1da15d8cab71acfb4c46415ea19f7dc4"
+    },
+    {
+      "file": "src/msr_music_tool/catalog.py",
+      "sha256": "1e320196361e2f84b7044fbabc513aba9c6caec54ab33bb034a2dc13422dd902"
+    },
+    {
+      "file": "src/msr_music_tool/cli.py",
+      "sha256": "43812378f3491ac1957463cd47d50d1ea3859c90d237be087595b3da535379cc"
+    },
+    {
+      "file": "src/msr_music_tool/commit_message.py",
+      "sha256": "91343d6218036f44a6e4242a1e8be4d23c51a9ef98f43ff149a9cea9cdbd10be"
+    },
+    {
+      "file": "src/msr_music_tool/config.py",
+      "sha256": "e00044bd3d0c1eccd2341a7ae9afe9bdd51ff350eb347cee0ebdc50ade0515e0"
+    },
+    {
+      "file": "src/msr_music_tool/downloader.py",
+      "sha256": "06d25057ab2309a72657cda31fa7e143a1d1430dbecfe965132b71d707d5d4d6"
+    },
+    {
+      "file": "src/msr_music_tool/models.py",
+      "sha256": "d9b973dc12e84be4b69092012060794ec9fa61c58769ecbcca4e338c8e102e8c"
+    },
+    {
+      "file": "src/msr_music_tool/msr_music_tool.tcss",
+      "sha256": "bb233f0e57db8f708ff19cb82d3dddcc689b871d84d72b9e154f9b9ea19c799c"
+    },
+    {
+      "file": "src/msr_music_tool/naming.py",
+      "sha256": "7d48fbb11f41bdd1f62f417ce026ef7476f8dfc6f5e4939f20fba2f27a69bba5"
+    },
+    {
+      "file": "src/msr_music_tool/progress.py",
+      "sha256": "f779ad665e008fa55829c0e7dd6173a907dd85fba13bbbacfa001366cf47949f"
+    },
+    {
+      "file": "src/msr_music_tool/service.py",
+      "sha256": "2f8ded172c0e5e725a10cc454c7ba8377900e536eea9a752552dd5eec5b13e31"
+    },
+    {
+      "file": "src/msr_music_tool/site.py",
+      "sha256": "eb0f1714e912d597d60e281a9bae7ba4087b6c7933d52744939da9a0c5acef97"
+    },
+    {
+      "file": "src/msr_music_tool/transfers.py",
+      "sha256": "bb6da1873aedae83ede7894e93695a994e9d4e41936ffd1001176b8dc26830bd"
+    },
+    {
+      "file": "src/msr_music_tool/__init__.py",
+      "sha256": "747c8afaffb515c99384009977b084ee25c4af2e86404e7995e78db086009b64"
+    },
+    {
+      "file": "src/msr_music_tool/__main__.py",
+      "sha256": "f87fac2015e0bc2f9dfd1518c1fe2573047ded5628942aea99f0325a6f722c17"
+    },
+    {
+      "file": "scripts/build_standalone.py",
+      "sha256": "aaee36891a169648eda81c599541fdaf29f2cafdbf198cb4435ef9bf94d008d9"
+    },
+    {
+      "file": "scripts/standalone_entry.py",
+      "sha256": "7645d012e28f2afa41e7d50a49eba5ea8dc77f989f07e5351ba237e2cacefb24"
+    },
+    {
+      "file": "scripts/verify_standalone.py",
+      "sha256": "4f3503d0859db7f85682123eec255dee5ae264779b202583363e6d0d323c35ae"
+    },
+    {
+      "file": "tests/conftest.py",
+      "sha256": "522150f133f57d1a044e022934aa2baa3ff616e5ee319efb826487d2c05d2a65"
+    },
+    {
+      "file": "tests/e2e_server.py",
+      "sha256": "5a2c319aba20ea1b51a3e037fb1133dd981874b9f0f0fa1fb24544aa2f182e00"
+    },
+    {
+      "file": "tests/test_app.py",
+      "sha256": "7aae37a96248316b1563fbfcf180b7cb22f1b2eb6953600ed9cffec77a77d8b2"
+    },
+    {
+      "file": "tests/test_catalog.py",
+      "sha256": "8723075181666af105f52a2e687a2e45dbc36484f74cac5e36676857fb9852f4"
+    },
+    {
+      "file": "tests/test_cli.py",
+      "sha256": "a4f4a5d78e62802f4b25fc107a029b335991b17a1437e850624b53764e425361"
+    },
+    {
+      "file": "tests/test_commit_message.py",
+      "sha256": "892b20d7ae6ca088b9c3c9f374c7092ed8f2b285a1dbd3dc2565706b5d285a32"
+    },
+    {
+      "file": "tests/test_config.py",
+      "sha256": "741db00d560c9d6db98ddbddd443161572b929b2391a88fcaf71e3e3bb84f54b"
+    },
+    {
+      "file": "tests/test_downloader.py",
+      "sha256": "c6f27c42261c3609981e2bdf9673601d81c5098355017b3c334d3af681bb3752"
+    },
+    {
+      "file": "tests/test_e2e.py",
+      "sha256": "11b38baaaeedf6d8530f5fd3fcdd2f7fe73efff85ffcb01849f89e79ab5645fe"
+    },
+    {
+      "file": "tests/test_live_contract.py",
+      "sha256": "e6b9e16ff49fdfb29e6fbc69120e7c09f237fd23a478d98551841b8a449a1729"
+    },
+    {
+      "file": "tests/test_naming.py",
+      "sha256": "95e0085442774786c876568957c4d34578c59b48ff488206784337ec2f141434"
+    },
+    {
+      "file": "tests/test_site.py",
+      "sha256": "ffd35bbf70b09af413a96dc12b995c75df2e5f9c81921c208fc14fa2419b62a0"
+    }
+  ],
+  "environment": {
+    "UV_NO_CONFIG": "1",
+    "NO_PROXY": "monster-siren.hypergryph.com,.hycdn.cn,127.0.0.1,localhost"
+  }
+}
