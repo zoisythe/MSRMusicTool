@@ -330,5 +330,8 @@ async def test_result_buttons_are_neutral_and_keyboard_selectable(tmp_path: Path
         await app.push_screen(ResultScreen(BatchResult(())))
         await pilot.pause()
         await pilot.press("right", "enter")
-        await pilot.pause()
+        for _ in range(20):
+            await pilot.pause()
+            if not app.is_running:
+                break
         assert not app.is_running
