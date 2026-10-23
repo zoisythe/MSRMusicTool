@@ -7,6 +7,9 @@ from collections import deque
 from contextlib import suppress
 from dataclasses import replace
 
+from rich.console import Console
+from rich.text import Text
+
 from .transfers import ResourceProgress
 
 TERMINAL = {"complete", "skipped", "failed", "error", "removed"}
@@ -27,24 +30,32 @@ STATES = {
 def size_text(value: float) -> str:
     for unit in ("B", "KiB", "MiB", "GiB", "TiB"):
         if value < 1024 or unit == "TiB":
-            return f"{value:.1f} {unit}"
+            return f"{value:.2f} {unit}"
         value /= 1024
     return ""
 
 
-def bar(fraction: float | None, style: str, frame: int, width: int = 18) -> str:
+def amount_text(downloaded: int, total: int | None) -> str:
+    return f"{size_text(downloaded)}/{size_text(total) if total is not None else '?'}"
+
+
+def bar(fraction: float | None, frame: int, width: int) -> Text:
+    result = Text()
     if fraction is None:
-        return "|/-\\"[frame % 4] + " " * (width - 1)
-    fill = max(0, min(width, int(width * fraction)))
-    if style == "#":
-        return "#" * fill + " " * (width - fill)
-    if style == "ILoveCandy":
-        return (
-            " " * min(fill, width - 1)
-            + ("C" if frame % 2 else "c")
-            + "." * max(0, width - fill - 1)
-        )
-    return "=" * max(0, fill - 1) + (">" if fill else "") + " " * (width - fill)
+        # Unknown lengths pulse along the track instead of implying a percentage.
+        pulse = min(3, width)
+        start = frame % (width - pulse + 1)
+        result.append("━" * start, "bright_black")
+        result.append("━" * pulse, "green")
+        result.append("━" * (width - start - pulse), "bright_black")
+    else:
+        scaled = width * max(0.0, min(1.0, fraction))
+        fill = int(scaled)
+        partial = int(scaled > fill)
+        result.append("━" * fill, "green")
+        result.append("╸" * partial, "green")
+        result.append("━" * (width - fill - partial), "bright_black")
+    return result
 
 
 class ProgressState:
@@ -85,41 +96,54 @@ class ProgressState:
         speed = sum(event.speed for event in values if event.status == "active")
         return downloaded, total, speed
 
-    def lines(self, style: str = "=>", frame: int = 0) -> list[str]:
+    @property
+    def summary(self) -> str:
         downloaded, total, speed = self.totals
-        fraction = downloaded / total if total else None
-        amount = (
-            f"{size_text(downloaded)}/{size_text(total)}"
-            if total is not None
-            else size_text(downloaded)
+        return (
+            f"歌曲 {self.completed_songs}/{self.total_songs}  {amount_text(downloaded, total)}"
+            f"  {size_text(speed)}/s"
         )
-        percentage = f" {fraction:.0%}" if fraction is not None else ""
-        eta = f" ETA {max(0, total - downloaded) / speed:.0f}s" if total and speed > 0 else ""
-        lines = [
-            f"[{bar(fraction, style, frame)}]{percentage} {amount} {size_text(speed)}/s{eta}"
-            f" · 歌曲 {self.completed_songs}/{self.total_songs}"
-        ]
+
+    def lines(self, *, width: int = 80, frame: int = 0) -> list[Text]:
+        downloaded, total, speed = self.totals
+        rows = [(f"歌曲 {self.completed_songs}/{self.total_songs}", downloaded, total, speed)]
         for event in self.resources.values():
             if event.status in TERMINAL:
                 continue
-            fraction = event.downloaded / event.total if event.total else None
-            percentage = f" {fraction:.0%}" if fraction is not None else ""
-            eta = (
-                f" ETA {(event.total - event.downloaded) / event.speed:.0f}s"
-                if (event.total and event.speed > 0 and event.status == "active")
-                else ""
+            label = event.label
+            if event.status != "active":
+                label += f" · {STATES.get(event.status, event.status)}"
+            rows.append((label, event.downloaded, event.total, event.speed))
+
+        width = max(1, width)
+        amounts = [Text(amount_text(done, length)) for _label, done, length, _speed in rows]
+        speeds = [Text(f"{size_text(speed)}/s", style="dim") for *_rest, speed in rows]
+        speed_width = min(max(speed.cell_len for speed in speeds), max(1, width - 10))
+        amount_width = min(
+            max(amount.cell_len for amount in amounts), max(1, width - speed_width - 8)
+        )
+        name_width = max(1, min(24, width // 3, width - amount_width - speed_width - 12))
+        bar_width = max(1, width - name_width - amount_width - speed_width - 6)
+        lines = []
+        for (label, done, length, _speed), amount, speed in zip(rows, amounts, speeds, strict=True):
+            name = Text(label.replace("\n", " ").replace("\r", " ").expandtabs(1), style="dim")
+            name.truncate(name_width, overflow="ellipsis", pad=True)
+            amount.truncate(amount_width, overflow="ellipsis")
+            amount.pad_left(amount_width - amount.cell_len)
+            speed.truncate(speed_width, overflow="ellipsis")
+            speed.pad_left(speed_width - speed.cell_len)
+            fraction = done / length if length else (1.0 if length == 0 else None)
+            line = Text.assemble(
+                name, "  ", bar(fraction, frame, bar_width), "  ", amount, "  ", speed
             )
-            lines.append(
-                f"{event.label} [{bar(fraction, style, frame)}]{percentage} "
-                f"{size_text(event.downloaded)} {size_text(event.speed)}/s{eta} "
-                f"{STATES.get(event.status, event.status)}"
-            )
+            line.truncate(width)
+            lines.append(line)
         return lines
 
 
 class CliProgress:
-    def __init__(self, state: ProgressState, style: str) -> None:
-        self.state, self.style = state, style
+    def __init__(self, state: ProgressState) -> None:
+        self.state = state
         self.task: asyncio.Task | None = None
         self.frame = 0
         self._previous = ""
@@ -143,32 +167,27 @@ class CliProgress:
             await asyncio.sleep(0.2)
 
     def render(self) -> None:
-        lines = self.state.lines(self.style, self.frame)
-        self.frame += 1
         logs = list(self.state.logs)
         self.state.logs.clear()
         if self._tty:
             terminal = shutil.get_terminal_size((80, 24))
-            width = max(10, terminal.columns - 1)
-            # Rich measures terminal cells (CJK titles occupy two cells) and strips control chars.
-            from rich.console import Console
-            from rich.text import Text
-
+            width = max(1, terminal.columns - 1)
             if self._rows:
                 sys.stderr.write(f"\x1b[{self._rows}A\x1b[J")
             console = Console(file=sys.stderr, force_terminal=True, width=width, highlight=False)
             for line in logs:
                 console.print(Text(line), overflow="ellipsis", no_wrap=True)
-            visible = lines[: max(1, terminal.lines - 3)]
+            visible = self.state.lines(width=width, frame=self.frame)[: max(1, terminal.lines - 3)]
             for line in visible:
-                console.print(Text(line), overflow="ellipsis", no_wrap=True)
+                console.print(line, overflow="ellipsis", no_wrap=True)
             self._rows = len(visible)
         else:
             # Keep log files bounded: periodic aggregate only, plus state transitions.
-            summary = lines[0].split("] ", 1)[-1]
+            summary = self.state.summary
             if summary != self._previous:
                 print(summary, file=sys.stderr)
                 self._previous = summary
             for log in logs:
                 print(log, file=sys.stderr)
+        self.frame += 1
         sys.stderr.flush()

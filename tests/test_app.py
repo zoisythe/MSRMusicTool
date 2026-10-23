@@ -4,6 +4,7 @@ from pathlib import Path
 
 import httpx
 import pytest
+from textual.content import Content
 from textual.widgets import Button, Input, Label, ListView
 
 import msr_music_tool.app as app_module
@@ -174,6 +175,7 @@ async def test_album_indicators_use_requested_glyphs_and_colors(tmp_path: Path) 
         assert isinstance(first, AlbumListItem)
         label = first.query_one(Label)
         rendered = label.render()
+        assert isinstance(rendered, Content)
         assert rendered.plain.startswith("○")
         assert any(str(span.style) == "grey50" for span in rendered.spans)
 
@@ -181,6 +183,7 @@ async def test_album_indicators_use_requested_glyphs_and_colors(tmp_path: Path) 
         await pilot.pause()
         first = albums.children[0]
         rendered = first.query_one(Label).render()
+        assert isinstance(rendered, Content)
         assert rendered.plain.startswith("●")
         assert any(str(span.style) == "green" for span in rendered.spans)
 
@@ -191,6 +194,7 @@ async def test_album_indicators_use_requested_glyphs_and_colors(tmp_path: Path) 
         await pilot.pause()
         first = albums.children[0]
         rendered = first.query_one(Label).render()
+        assert isinstance(rendered, Content)
         assert rendered.plain.startswith("◐")
         assert any(str(span.style) == "yellow" for span in rendered.spans)
 

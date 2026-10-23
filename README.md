@@ -17,7 +17,7 @@ MSRMusicTool 是一个基于 Python 和 Textual 的塞壬唱片音乐下载工�
 
 ## 安装与运行
 
-需要 Python 3.11 或更高版本。使用 [uv](https://docs.astral.sh/uv/) 安装：
+需要 Python 3.13 或更高版本；源码环境默认使用 3.13。使用 [uv](https://docs.astral.sh/uv/) 安装：
 
 ```console
 uv tool install .
@@ -36,7 +36,7 @@ uv run msr-tool
 
 ## 配置
 
-### 0.2.0 CLI 与下载后端
+### CLI 与下载后端
 
 无参数启动 TUI；CLI 不打开交互界面：
 
@@ -54,7 +54,6 @@ msr-tool download 953935 --mode audio-lyrics --config ./config.toml --output ./M
 directory = "D:/Music"
 backend = "http" # http 或 aria2
 max_concurrent_downloads = 4 # 同时传输的资源数，1–32
-progress_style = "=>" # =>、#、ILoveCandy
 
 [rpc]
 endpoint = "http://127.0.0.1:6800/jsonrpc"
@@ -64,13 +63,16 @@ poll_interval = 0.5 # 秒，0.1–60
 ```
 
 `--config` 选择 TOML 文件，显式指定的文件不存在会报错；`--output` 临时覆盖目录，其相对
-路径以启动目录为基准。两者也可用于无子命令的 TUI 启动。并发数、风格、RPC 参数只在
+路径以启动目录为基准。两者也可用于无子命令的 TUI 启动。并发数、RPC 参数只在
 TOML 中配置；旧的仅含 `download.directory` 的配置仍然有效。启用 `rpc.directory` 映射
 时，不允许 `--output` 指向其他目录。
 
 CLI 搜索结果写入 stdout，下载状态和诊断写入 stderr；终端每秒最多刷新五次，重定向时
 输出普通文本。退出码为成功 0、无匹配或下载失败 1、参数或配置错误 2、中断 130。
-未知长度显示已下载字节和速度，不显示虚假的百分比。
+CLI 和 TUI 统一使用 uv 风格进度：左侧名称、中间绿色细条、右侧已下载量/总量及下载速度，
+不显示 ETA。
+不再提供样式配置，旧配置中的 `progress_style` 被忽略。未知长度显示已下载量和 `?`，
+进度条使用移动动画。
 
 RPC 连接由用户启动的 Aria2 兼容引擎，不自动启动或回退后端。音频、远端歌词和封面由
 引擎下载；简介歌词与封面复制在本机处理。引擎目录必须可由本工具访问（本机或共享
@@ -78,8 +80,8 @@ RPC 连接由用户启动的 Aria2 兼容引擎，不自动启动或回退后端
 设置。Ctrl+C 最多等待五秒取消本次任务；取消无法确认时会报告 GID 并保留临时文件，
 不影响引擎内其他任务。暂不支持无共享磁盘的远端输出、跨进程恢复或提交后退出。
 
-HTTP 使用异步网络并发和受限磁盘线程；CLI/TUI 实时展示资源字节、速度、ETA 和歌曲
-完成数。同专辑封面只传输一次。传输重试会重置当前资源字节计数。
+HTTP 使用异步网络并发和受限磁盘线程；CLI/TUI 实时展示资源字节进度、下载速度和歌曲完成数。
+同专辑封面只传输一次。传输重试会重置当前资源字节计数。
 
 配置文件名为 `config.toml`，位于操作系统的用户配置目录下。文件内容如下：
 
@@ -159,14 +161,15 @@ uv run --no-sync python scripts/verify_standalone.py
 
 ```console
 uv run --no-sync python scripts/verify_standalone.py --live --report build/standalone-acceptance.json
-uv run --no-sync python scripts/verify_standalone.py --live --wheel dist/msrmusictool-0.2.0-py3-none-any.whl --report build/wheel-acceptance.json
+uv run --no-sync python scripts/verify_standalone.py --live --wheel dist/msrmusictool-0.2.1-py3-none-any.whl --report build/wheel-acceptance.json
 ```
 
 `tests/test_e2e.py` 使用实际本地 HTTP 服务及限速合成媒体验证 CLI/TUI 的完整下载和
 实时进度。设置 `MSR_ARIA2_BINARY`、`MSR_ARIA_NEXT_BINARY` 为引擎可执行文件路径后，
 完整测试还会启动真实引擎验证 RPC 下载、断连恢复、提交去重及取消隔离。未设置时
-对应引擎验收明确跳过。CI 的 Windows RPC 作业使用固定的 Aria2 1.37.0 和 Aria2 Next
-2.8.3；Release 构建执行独立程序的 `--live` 验收。
+对应引擎验收明确跳过。CI 在三个系统上使用 Python 3.13；静态检查和 Python 包构建仅在
+Linux 执行，Windows 测试自动下载 Aria2 和 Aria2 Next 的最新正式 Release 执行真实引擎验收。
+Release 使用 Python 3.13 构建，并执行独立程序的 `--live` 验收。
 
 构建结果写入 `release/`。推送 `v*` 标签时，GitHub Actions 会分别构建 Windows、Linux、
 macOS 独立程序，并自动创建 GitHub Release。
@@ -179,4 +182,4 @@ MSR_RUN_LIVE_TESTS=1 uv run pytest -m integration
 
 项目仅访问官网公开接口，仓库不包含音乐文件。
 
-0.2.0 的实际测试环境、结果和证据见 [验收记录](docs/testing/0.2.0-acceptance.md)。
+0.2.0 发布时的历史测试环境、结果和证据见 [验收记录](docs/testing/0.2.0-acceptance.md)。

@@ -76,10 +76,6 @@ ListItem.--highlight {
     border: round $primary;
 }
 
-#download-progress {
-    margin: 2 2 1 2;
-}
-
 #download-log {
     height: 1fr;
     margin: 1 2 2 2;

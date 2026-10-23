@@ -28,7 +28,6 @@ class AppConfig:
     is_configured: bool
     backend: str = "http"
     max_concurrent_downloads: int = 4
-    progress_style: str = "=>"
     rpc: RpcConfig = field(default_factory=RpcConfig)
 
 
@@ -77,9 +76,6 @@ def load_config(
     concurrency = download.get("max_concurrent_downloads", 4)
     if type(concurrency) is not int or not 1 <= concurrency <= 32:
         raise ConfigError(f"{path}: download.max_concurrent_downloads 必须为 1–32 的整数")
-    style = download.get("progress_style", "=>")
-    if style not in ("=>", "#", "ILoveCandy"):
-        raise ConfigError(f"{path}: download.progress_style 必须为 =>、# 或 ILoveCandy")
     rpc = raw.get("rpc", {})
     if not isinstance(rpc, dict):
         raise ConfigError(f"{path}: rpc 必须是表")
@@ -125,7 +121,6 @@ def load_config(
         is_configured=True,
         backend=backend,
         max_concurrent_downloads=concurrency,
-        progress_style=style,
         rpc=RpcConfig(endpoint, secret, float(interval), remote_dir),
     )
     return _override_output(config, output, working_dir)

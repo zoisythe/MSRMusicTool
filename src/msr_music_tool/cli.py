@@ -97,7 +97,7 @@ async def run_cli(args: argparse.Namespace, config: AppConfig) -> int:
         results = list(prepared.failures)
         try:
             if prepared.albums:
-                async with CliProgress(state, config.progress_style):
+                async with CliProgress(state):
                     result = await downloader.execute(
                         prepared.albums, progress=completed, resource_progress=state.update
                     )

@@ -48,7 +48,7 @@ class FixtureServer(AbstractContextManager):
                 with suppress(OSError):
                     super().handle()
 
-            def log_message(self, *_args: object) -> None:
+            def log_message(self, format: str, *args: object) -> None:
                 pass
 
             def send_json(self, data: Any) -> None:
@@ -215,7 +215,7 @@ class FixtureServer(AbstractContextManager):
             gid = options["gid"]
             if gid in self.jobs:
                 return {"error": {"code": 1, "message": "duplicate GID"}}
-            job = {
+            job: dict[str, Any] = {
                 "gid": gid,
                 "status": "active",
                 "totalLength": "0",

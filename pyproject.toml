@@ -4,10 +4,10 @@ build-backend = "hatchling.build"
 
 [project]
 name = "MSRMusicTool"
-version = "0.2.0"
+version = "0.2.1"
 description = "CLI and TUI music downloader for Monster Siren Records, with live progress and RPC."
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.13"
 license = { text = "MIT" }
 authors = [{ name = "MSRMusicTool contributors" }]
 dependencies = [
@@ -44,7 +44,7 @@ testpaths = ["tests"]
 
 [tool.ruff]
 line-length = 100
-target-version = "py311"
+target-version = "py313"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B", "SIM", "ASYNC"]

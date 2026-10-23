@@ -13,7 +13,8 @@ from pathlib import Path
 import httpx
 import pytest
 from e2e_server import FixtureServer
-from textual.widgets import ProgressBar, Select
+from rich.text import Text
+from textual.widgets import Select, Static
 
 from msr_music_tool.app import ConfirmScreen, DownloadScreen, MonsterSirenApp, ResultScreen
 from msr_music_tool.catalog import Catalog
@@ -40,14 +41,13 @@ def config_file(
     backend: str = "http",
     endpoint: str = "",
     secret: str = "acceptance-secret",
-    style: str = "=>",
     extra: str = "",
 ) -> Path:
     import json
 
     path.write_text(
         f'[download]\ndirectory = {json.dumps(str(output))}\nbackend = "{backend}"\n'
-        f'max_concurrent_downloads = 2\nprogress_style = "{style}"\n[rpc]\n'
+        "max_concurrent_downloads = 2\n[rpc]\n"
         f'endpoint = "{endpoint or "http://127.0.0.1:6800/jsonrpc"}"\n'
         f'secret = "{secret}"\npoll_interval = 0.1\n{extra}',
         encoding="utf-8",
@@ -109,10 +109,9 @@ def test_cli_search_and_invalid_input(server, tmp_path):
 
 
 @pytest.mark.parametrize("mode,count", [("all", 6), ("audio", 2), ("audio-lyrics", 4)])
-@pytest.mark.parametrize("style", ["=>", "#", "ILoveCandy"])
-def test_cli_modes_progress_and_skip(server, tmp_path, mode, count, style):
+def test_cli_modes_progress_and_skip(server, tmp_path, mode, count):
     out = tmp_path / "override"
-    config = config_file(tmp_path / "config.toml", tmp_path / "unused", style=style)
+    config = config_file(tmp_path / "config.toml", tmp_path / "unused")
     result = cli(
         server,
         "--config",
@@ -130,7 +129,7 @@ def test_cli_modes_progress_and_skip(server, tmp_path, mode, count, style):
     assert not result.stdout and "\x1b" not in result.stderr
     assert len(list(out.iterdir())) == count
     assert not (tmp_path / "unused").exists()
-    assert "歌曲 0/2" in result.stderr and "/s" in result.stderr
+    assert "歌曲 0/2" in result.stderr and "KiB/" in result.stderr and "/s" in result.stderr
     assert server.max_active >= 2 and server.max_active <= 2
     if mode == "all":
         assert server.calls[("GET", "/a1.jpg")] == 1
@@ -176,7 +175,7 @@ def test_cli_unknown_length_retry_and_partial_failure(server, tmp_path):
     assert "重试" in result.stderr and server.calls[("GET", "/555555.wav")] == 2
     assert "999999" in result.stderr and "不存在" in result.stderr
     assert len(list((tmp_path / "out").glob("*.wav"))) == 2
-    assert f"{2 * server.media_size / 1024:.1f} KiB 0.0 B/s · 歌曲 4/4" in result.stderr
+    assert f"歌曲 4/4  {2 * server.media_size / 1024:.2f} KiB/?" in result.stderr
     assert not list((tmp_path / "out").glob("*.part"))
 
 
@@ -187,7 +186,6 @@ def test_cli_rejects_invalid_configuration_before_network(server, tmp_path):
         "max_concurrent_downloads = 0",
         "max_concurrent_downloads = 33",
         'backend = "unsupported"',
-        'progress_style = "invalid"',
         "[rpc]\npoll_interval = nan",
         "[rpc]\npoll_interval = 0",
         "[rpc]\nsecret = 123",
@@ -305,6 +303,7 @@ async def test_tui_modes_live_progress_resize_and_interrupt(server, tmp_path, mo
             await asyncio.sleep(0.03)
             if app.selection is not None:
                 break
+        assert app.selection is not None
         app.selection.selected.update(["111111", "777777"])
         app.prepared_downloads = await app.prepare_downloads()
         await app.push_screen(ConfirmScreen())
@@ -322,35 +321,55 @@ async def test_tui_modes_live_progress_resize_and_interrupt(server, tmp_path, mo
         assert screen.state.completed_songs == 0
         await pilot.resize_terminal(50, 18)
         await asyncio.sleep(0.25)
-        assert screen.query_one(ProgressBar).progress > 0
+        screen._refresh_progress()
+        status = screen.query_one("#download-status", Static)
+        resources = screen.query_one("#resource-status", Static)
+        width = min(status.content_size.width, resources.content_size.width)
+        rows = screen.state.lines(width=width, frame=screen.frame - 1)
+        assert status.content == rows[0]
+        assert resources.content == Text("\n").join(rows[1:])
+        assert all(row.cell_len <= width for row in rows)
+        assert any("━" in row.plain or "╸" in row.plain for row in rows)
         assert any(event.speed > 0 for event in screen.state.resources.values())
         await pilot.press("ctrl+c")
         assert not app.is_running
     assert not list(config.download_dir.glob("*.part"))
 
 
-@pytest.mark.parametrize("style", ["=>", "#", "ILoveCandy"])
-def test_terminal_renderer_uses_requested_style_and_cell_width(style, monkeypatch):
+@pytest.mark.parametrize("width", [24, 36, 80, 120])
+def test_terminal_renderer_uses_uv_style_and_cell_width(width, monkeypatch):
     class Terminal(io.StringIO):
         def isatty(self):
             return True
 
     terminal = Terminal()
+    monkeypatch.delenv("NO_COLOR", raising=False)
+    monkeypatch.setenv("TERM", "xterm-256color")
     monkeypatch.setattr(sys, "stderr", terminal)
-    monkeypatch.setattr("shutil.get_terminal_size", lambda *_args: os.terminal_size((36, 12)))
+    monkeypatch.setattr("shutil.get_terminal_size", lambda *_args: os.terminal_size((width, 12)))
     state = ProgressState(2)
     state.update(
         ResourceProgress("audio", ("111111",), "中文歌曲名称 · 音频", "active", 50, 100, 20)
     )
-    renderer = CliProgress(state, style)
+    renderer = CliProgress(state)
     renderer.render()
+    rows = state.lines(width=width - 1)
+    assert all(row.cell_len == width - 1 for row in rows)
+    if width >= 36:
+        assert "50.00 B/100.00 B" in rows[1].plain
+    assert "20.00 B/s" in rows[1].plain
+    assert any(span.style == "green" for span in rows[1].spans)
+    state.update(ResourceProgress("unknown", ("222222",), "未知长度", "active", 42, None))
+    if width >= 36:
+        assert "42.00 B/?" in state.lines(width=width - 1)[2].plain
     state.update(
         ResourceProgress("audio", ("111111",), "中文歌曲名称 · 音频", "complete", 100, 100)
     )
     renderer.render()
     output = terminal.getvalue()
-    assert "\x1b[" in output and "50%" in output
-    assert {"=>": "=", "#": "#", "ILoveCandy": "c"}[style] in output
+    assert "\x1b[32m" in output and "━" in output
+    assert "20.00 B/s" in Text.from_ansi(output).plain
+    assert "ETA" not in output
 
 
 def test_rpc_cli_recovery_auth_mapping_and_partial_failure(server, tmp_path):
@@ -460,6 +479,7 @@ async def test_tui_real_download_result_and_mode_selection(
             await asyncio.sleep(0.03)
             if app.selection is not None:
                 break
+        assert app.selection is not None
         app.selection.selected.update(["111111", "222222"])
         app.prepared_downloads = await app.prepare_downloads()
         await app.push_screen(ConfirmScreen())
@@ -476,6 +496,7 @@ async def test_tui_real_download_result_and_mode_selection(
             if isinstance(app.screen, ResultScreen):
                 break
         assert isinstance(app.screen, ResultScreen)
+        assert app.last_result is not None
         assert app.last_result.count(SongOutcome.SUCCESS) == 2
         assert not app.selection.selected
         await pilot.press("escape")
@@ -558,7 +579,7 @@ def test_real_engine_cli_full_download_and_ambiguous_submission(server, tmp_path
     assert server.calls[("RPC", "aria2.addUri")] == 4
     assert server.calls[("GET", "/a1.jpg")] == 1
     assert not list((tmp_path / "out").glob("*.part"))
-    assert "歌曲 0/2" in result.stderr and "/s" in result.stderr
+    assert "歌曲 0/2" in result.stderr and "KiB/" in result.stderr
 
 
 @pytest.mark.asyncio

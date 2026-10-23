@@ -7,6 +7,7 @@ from typing import cast
 
 import httpx
 from rich.markup import escape
+from rich.text import Text
 from textual import events, on
 from textual.app import App, ComposeResult
 from textual.binding import Binding
@@ -21,7 +22,6 @@ from textual.widgets import (
     Label,
     ListItem,
     ListView,
-    ProgressBar,
     RichLog,
     Select,
     Static,
@@ -92,7 +92,7 @@ class LoadingScreen(Screen[None]):
     def on_mount(self) -> None:
         self.query_one("#loading-actions").display = False
 
-    def set_loading(self) -> None:
+    def show_loading_message(self) -> None:
         self.query_one("#loading-message", Static).update("正在读取塞壬唱片索引……")
         self.query_one("#loading-actions").display = False
 
@@ -395,7 +395,6 @@ class DownloadScreen(Screen[None]):
         self.downloader: BatchDownloader | None = None
         yield Header(show_clock=False)
         yield Static("正在下载", classes="screen-title")
-        yield ProgressBar(total=None, id="download-progress")
         yield Static(f"0/{total}", id="download-status")
         with VerticalScroll(id="resource-list"):
             yield Static("正在准备资源……", id="resource-status")
@@ -457,14 +456,13 @@ class DownloadScreen(Screen[None]):
     def _refresh_progress(self) -> None:
         if not self.is_mounted:
             return
-        downloaded, total, _speed = self.state.totals
-        self.query_one("#download-progress", ProgressBar).update(total=total, progress=downloaded)
-        lines = self.state.lines(
-            cast(MonsterSirenApp, self.app).config.progress_style, frame=self.frame
-        )
+        status = self.query_one("#download-status", Static)
+        resources = self.query_one("#resource-status", Static)
+        width = max(1, min(status.content_size.width, resources.content_size.width))
+        lines = self.state.lines(width=width, frame=self.frame)
         self.frame += 1
-        self.query_one("#download-status", Static).update(escape(lines[0]))
-        self.query_one("#resource-status", Static).update(escape("\n".join(lines[1:])))
+        status.update(lines[0])
+        resources.update(Text("\n").join(lines[1:]))
         log = self.query_one("#download-log", RichLog)
         while self.state.logs:
             log.write(self.state.logs.popleft())
@@ -572,7 +570,7 @@ class MonsterSirenApp(App[None]):
         if self._loading:
             return
         if isinstance(self.screen, LoadingScreen):
-            self.screen.set_loading()
+            self.screen.show_loading_message()
         self._loading = True
         self.run_worker(self._load_catalog(), exclusive=True, name="load-catalog")
 

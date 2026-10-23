@@ -2,7 +2,6 @@
 directory = "./Music"
 backend = "http"
 max_concurrent_downloads = 4
-progress_style = "=>"
 
 [rpc]
 endpoint = "http://127.0.0.1:6800/jsonrpc"
