@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 from pathlib import Path
 
 import httpx
@@ -61,8 +62,12 @@ async def test_http_client_supports_socks_proxy_from_environment(
 async def test_loading_error_buttons_are_keyboard_selectable(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
+    client_attempted = asyncio.Event()
+
     class FakeClient:
         async def __aenter__(self) -> object:
+            client_attempted.set()
+            await asyncio.sleep(0.05)
             raise RuntimeError("index failed")
 
         async def __aexit__(self, *_args: object) -> None:
@@ -75,6 +80,8 @@ async def test_loading_error_buttons_are_keyboard_selectable(
     )
 
     async with app.run_test(size=(80, 24)) as pilot:
+        await asyncio.wait_for(client_attempted.wait(), timeout=3)
+        await app.workers.wait_for_complete()
         await pilot.pause()
         assert isinstance(app.screen, LoadingScreen)
         retry = app.screen.query_one("#retry", Button)
@@ -84,6 +91,11 @@ async def test_loading_error_buttons_are_keyboard_selectable(
         unfocused_style = exit_button.rich_style
         focused_style = retry.rich_style
         assert focused_style != unfocused_style
+
+        app.screen.action_focus_exit()
+        assert app.screen.focused is exit_button
+        app.screen.action_focus_retry()
+        assert app.screen.focused is retry
 
         await pilot.press("right")
         assert exit_button.has_focus

@@ -2,7 +2,7 @@
   "platform": "Windows-11-10.0.26340-SP0",
   "artifact": "C:\\Users\\Zoisythe\\Code\\Project\\MSRMusicTool\\dist\\msrmusictool-0.2.2-py3-none-any.whl",
   "version": "msr-tool 0.2.2",
-  "artifact_sha256": "e972a4e2d583de70f2234624c7a7ada3416fe3ec270039395ee3c82bd20e11ca",
+  "artifact_sha256": "09c59dceaf4f0de786ab7179e40f4a922b0ac4dd046740a7a7bd0242f5198d31",
   "live": true,
   "files": [
     {
@@ -28,7 +28,7 @@
       ],
       "exit_code": 0,
       "stdout": "usage: msr-tool [-h] [--version] [--config CONFIG] [--output OUTPUT]\n                {search,download} ...\n\n搜索并批量下载塞壬唱片音乐、歌词和封面；无子命令启动 TUI。\n\npositional arguments:\n  {search,download}\n    search           搜索名称、六位 ID 或官网链接\n    download         按六位歌曲 ID 下载\n\noptions:\n  -h, --help         show this help message and exit\n  --version          show program's version number and exit\n  --config CONFIG    TOML 配置文件\n  --output OUTPUT    临时覆盖下载目录\n\n配置文件位置：C:\\Users\\Zoisythe\\AppData\\Local\\MSRMusicTool\\config.toml\n并发、进度风格和 RPC 参数只在 TOML 中配置。\n",
-      "stderr": ""
+      "stderr": "Installed 17 packages in 86ms\n"
     },
     {
       "arguments": [
@@ -64,7 +64,7 @@
         "125027",
         "https://monster-siren.hypergryph.com/m/music/125027",
         "--config",
-        "C:\\Users\\Zoisythe\\AppData\\Local\\Temp\\msr-release-acceptance-j6hv64l8\\config.toml"
+        "C:\\Users\\Zoisythe\\AppData\\Local\\Temp\\msr-release-acceptance-lplch8bq\\config.toml"
       ],
       "exit_code": 0,
       "stdout": "ID\t歌曲\t专辑\t艺人\t链接\n125027\t[classified]entity.dominion.turmoil\t [classified]entity.dominion.turmoil\t塞壬唱片-MSR\thttps://monster-siren.hypergryph.com/music/125027\n",
@@ -75,11 +75,11 @@
         "download",
         "125027",
         "--config",
-        "C:\\Users\\Zoisythe\\AppData\\Local\\Temp\\msr-release-acceptance-j6hv64l8\\config.toml"
+        "C:\\Users\\Zoisythe\\AppData\\Local\\Temp\\msr-release-acceptance-lplch8bq\\config.toml"
       ],
       "exit_code": 0,
       "stdout": "",
-      "stderr": "歌曲 0/1  0.00 B/?  0.00 B/s\n歌曲 0/1  658.66 KiB/61.50 MiB  14.79 MiB/s\n [classified]entity.dominion.turmoil · 封面：完成\n塞壬唱片-MSR - [classified]entity.dominion.turmoil · 歌词：完成\n歌曲 0/1  4.77 MiB/61.50 MiB  15.07 MiB/s\n歌曲 0/1  9.32 MiB/61.50 MiB  22.56 MiB/s\n歌曲 0/1  13.90 MiB/61.50 MiB  23.58 MiB/s\n歌曲 0/1  18.14 MiB/61.50 MiB  22.17 MiB/s\n歌曲 0/1  21.64 MiB/61.50 MiB  17.44 MiB/s\n歌曲 0/1  25.64 MiB/61.50 MiB  19.03 MiB/s\n歌曲 0/1  30.16 MiB/61.50 MiB  19.88 MiB/s\n歌曲 0/1  33.71 MiB/61.50 MiB  25.14 MiB/s\n歌曲 0/1  36.14 MiB/61.50 MiB  10.47 MiB/s\n歌曲 0/1  39.89 MiB/61.50 MiB  12.45 MiB/s\n歌曲 0/1  44.32 MiB/61.50 MiB  21.90 MiB/s\n歌曲 0/1  47.33 MiB/61.50 MiB  18.93 MiB/s\n歌曲 0/1  50.14 MiB/61.50 MiB  14.54 MiB/s\n歌曲 0/1  53.10 MiB/61.50 MiB  11.56 MiB/s\n歌曲 0/1  57.44 MiB/61.50 MiB  20.08 MiB/s\n歌曲 0/1  60.32 MiB/61.50 MiB  20.93 MiB/s\n歌曲 1/1  61.50 MiB/61.50 MiB  0.00 B/s\n塞壬唱片-MSR - [classified]entity.dominion.turmoil · 音频：完成\n125027 [classified]entity.dominion.turmoil：success\n"
+      "stderr": "歌曲 0/1  0.00 B/?  0.00 B/s\n歌曲 0/1  817.69 KiB/?  14.78 MiB/s\n [classified]entity.dominion.turmoil · 封面：完成\n歌曲 0/1  4.71 MiB/61.50 MiB  12.69 MiB/s\n塞壬唱片-MSR - [classified]entity.dominion.turmoil · 歌词：完成\n歌曲 0/1  12.32 MiB/61.50 MiB  32.64 MiB/s\n歌曲 0/1  18.41 MiB/61.50 MiB  32.81 MiB/s\n歌曲 0/1  24.08 MiB/61.50 MiB  27.04 MiB/s\n歌曲 0/1  29.64 MiB/61.50 MiB  28.92 MiB/s\n歌曲 0/1  34.64 MiB/61.50 MiB  26.07 MiB/s\n歌曲 0/1  40.55 MiB/61.50 MiB  25.88 MiB/s\n歌曲 0/1  45.10 MiB/61.50 MiB  24.30 MiB/s\n歌曲 0/1  48.14 MiB/61.50 MiB  20.35 MiB/s\n歌曲 0/1  53.14 MiB/61.50 MiB  21.95 MiB/s\n歌曲 0/1  58.08 MiB/61.50 MiB  23.36 MiB/s\n歌曲 1/1  61.50 MiB/61.50 MiB  0.00 B/s\n塞壬唱片-MSR - [classified]entity.dominion.turmoil · 音频：完成\n125027 [classified]entity.dominion.turmoil：success\n"
     },
     {
       "arguments": [
@@ -88,7 +88,7 @@
         "--mode",
         "audio",
         "--config",
-        "C:\\Users\\Zoisythe\\AppData\\Local\\Temp\\msr-release-acceptance-j6hv64l8\\config.toml"
+        "C:\\Users\\Zoisythe\\AppData\\Local\\Temp\\msr-release-acceptance-lplch8bq\\config.toml"
       ],
       "exit_code": 0,
       "stdout": "",

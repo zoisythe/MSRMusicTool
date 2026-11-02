@@ -98,7 +98,7 @@ uv lock --check --offline
 [环境记录](assets/2026-11-02-tui-optimized/environment.json)中。
 全部证据的 SHA-256 见 [清单](assets/2026-11-02-tui-optimized/manifest.json)。
 
-## 0.2.2 发布前验证
+## 0.2.2 发布前验证（2026-11-03，Asia/Shanghai）
 
 - 更新版本标识后，完整回归再次通过：89 通过、0 失败、0 跳过，包含官网契约及两种真实
   引擎。见 [发布前 JUnit](assets/0.2.2/tests.xml)。
@@ -108,3 +108,5 @@ uv lock --check --offline
   大小和校验值。
 - 全仓 Ruff 检查和格式检查、CodeIntel ty/Ruff 项目检查、锁文件检查与 pre-commit 均通过。
   发布前证据的 SHA-256 见 [清单](assets/0.2.2/manifest.json)。
+- 加载页的隐藏按钮不自动获得焦点；错误页、确认页和结果页同步切换输入焦点。
+  键盘回归显式等待后台失败状态就绪，并检查按钮操作返回时的输入目标，避免调度时序干扰。

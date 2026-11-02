@@ -112,6 +112,8 @@ class CatalogOptions(OptionList):
 
 
 class LoadingScreen(Screen[None]):
+    AUTO_FOCUS = ""
+
     BINDINGS = [
         Binding("r", "retry", "重试", show=False),
         Binding("escape", "exit_app", "退出"),
@@ -140,7 +142,7 @@ class LoadingScreen(Screen[None]):
             f"[red]索引加载失败[/red]\n{escape(str(error))}"
         )
         self.query_one("#loading-actions").display = True
-        self.query_one("#retry", Button).focus()
+        self.set_focus(self.query_one("#retry", Button))
 
     def action_retry(self) -> None:
         msr_app = cast(MonsterSirenApp, self.app)
@@ -150,10 +152,10 @@ class LoadingScreen(Screen[None]):
         self.app.exit()
 
     def action_focus_retry(self) -> None:
-        self.query_one("#retry", Button).focus()
+        self.set_focus(self.query_one("#retry", Button))
 
     def action_focus_exit(self) -> None:
-        self.query_one("#exit", Button).focus()
+        self.set_focus(self.query_one("#exit", Button))
 
     @on(Button.Pressed)
     def handle_button(self, event: Button.Pressed) -> None:
@@ -508,16 +510,16 @@ class ConfirmScreen(Screen[None]):
         yield Footer()
 
     def on_mount(self) -> None:
-        self.query_one("#confirm", Button).focus()
+        self.set_focus(self.query_one("#confirm", Button))
 
     def action_cancel(self) -> None:
         self.app.pop_screen()
 
     def action_focus_cancel(self) -> None:
-        self.query_one("#cancel", Button).focus()
+        self.set_focus(self.query_one("#cancel", Button))
 
     def action_focus_confirm(self) -> None:
-        self.query_one("#confirm", Button).focus()
+        self.set_focus(self.query_one("#confirm", Button))
 
     @on(Button.Pressed)
     def handle_button(self, event: Button.Pressed) -> None:
@@ -645,7 +647,7 @@ class ResultScreen(Screen[None]):
         yield Footer()
 
     def on_mount(self) -> None:
-        self.query_one("#back", Button).focus()
+        self.set_focus(self.query_one("#back", Button))
 
     def action_back_to_catalog(self) -> None:
         self.app.pop_screen()
@@ -654,10 +656,10 @@ class ResultScreen(Screen[None]):
         self.app.exit()
 
     def action_focus_back(self) -> None:
-        self.query_one("#back", Button).focus()
+        self.set_focus(self.query_one("#back", Button))
 
     def action_focus_quit(self) -> None:
-        self.query_one("#quit", Button).focus()
+        self.set_focus(self.query_one("#quit", Button))
 
     @on(Button.Pressed)
     def handle_button(self, event: Button.Pressed) -> None:
