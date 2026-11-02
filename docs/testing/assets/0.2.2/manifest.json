@@ -1,4 +1,8 @@
 {
+  "async-regressions.xml": {
+    "sha256": "a951ecbcbe7fc28b86583c87f1ff8349f196ec7d47f30316828707c64222ab34",
+    "bytes": 1641
+  },
   "tests.xml": {
     "sha256": "f5965d00de04e82fdfe0b1698bd70ffcf9fa9e9446a7ead127325dcbff2813bf",
     "bytes": 10908

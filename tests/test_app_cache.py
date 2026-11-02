@@ -120,6 +120,7 @@ async def test_background_refresh_waits_for_return_and_reconciles_selection(
         app.album_cache["a1"] = detail
         await pilot.press("space", "right")
         await wait_until(lambda: isinstance(app.screen, AlbumScreen))
+        await pilot.pause()
         release.set()
         await wait_until(lambda: not app._loading)
         assert app.catalog is not None and app.selection is not None

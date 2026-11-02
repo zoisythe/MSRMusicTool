@@ -59,6 +59,7 @@ async def test_cancelled_detail_cannot_replace_a_newer_request(
         assert isinstance(app.screen, CatalogScreen)
         release["a2"].set()
         await wait_until(lambda: isinstance(app.screen, AlbumScreen))
+        await pilot.pause()
         assert isinstance(app.screen, AlbumScreen) and app.screen.album.cid == "a2"
 
 
