@@ -1,0 +1,54 @@
+{
+  "baseline-2.json": {
+    "sha256": "ea35a6e5fe0c9acd6eef83871f7ff5395304ee861702f9d6b70669fd07d7a585",
+    "bytes": 3363
+  },
+  "baseline-302.json": {
+    "sha256": "a87a088e1ebe0cdee3a17191fa1b580e95f3ec9f11654959665aedd22d6b38b0",
+    "bytes": 5134
+  },
+  "catalog.json": {
+    "sha256": "9c47ee2cc8c8658b45a3ad59aca22d6c6ab1c25f7ffdd771f7744bae6ebc7ded",
+    "bytes": 150112
+  },
+  "color-markup.json": {
+    "sha256": "d97925004e724af092e9535c88538a01d31caf0fbebcf6005e21bef32f6084c0",
+    "bytes": 413
+  },
+  "color_markup.py": {
+    "sha256": "bdf98486ea581d0424633d89a459c9bbf895c64985ca7c778472e9a727e48472",
+    "bytes": 1164
+  },
+  "environment.json": {
+    "sha256": "9b37a7128e483a4d9fee4dd72af32b5e7d616c253c1ba4e00692f994dae753a4",
+    "bytes": 4834
+  },
+  "hex-302.json": {
+    "sha256": "67fb4aad31b04e1257f1c5c9f88facb3bc1b358f83c68a1f6006e7e036ead4ba",
+    "bytes": 5038
+  },
+  "hex-reuse-302.json": {
+    "sha256": "f3f8e1490c8540fa94e37d3f39427fd97c56f8d098f493c87210aa813af871b5",
+    "bytes": 5020
+  },
+  "once-302.json": {
+    "sha256": "f4e54d3a7b0840c74c07468538e0870309f9502183937ce1c723633fc0335314",
+    "bytes": 3412
+  },
+  "profile-summary.txt": {
+    "sha256": "2f9a78b02b3997ba5429776da644ee7ccaa5f53f18e53547dc8b39c2451a860f",
+    "bytes": 6311
+  },
+  "profile_tui.py": {
+    "sha256": "6869634f2bc4d5f9392fe3964be7ad67786b9fba74122f7ba3b8719cd409f164",
+    "bytes": 10734
+  },
+  "startup-and-input.json": {
+    "sha256": "ab21fe1b01d1b334fb63b92a3ac783aba9c3679b6b10974e76b98a66bf694d37",
+    "bytes": 1013
+  },
+  "startup_and_input.py": {
+    "sha256": "ebfacdb2116a0f99792e441fd60bda5e217b34d6a26a0ffc9639e5f37f431fc5",
+    "bytes": 4831
+  }
+}

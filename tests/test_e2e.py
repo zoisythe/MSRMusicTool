@@ -297,7 +297,7 @@ async def test_tui_modes_live_progress_resize_and_interrupt(server, tmp_path, mo
     config = AppConfig(
         tmp_path / "config.toml", tmp_path / "out", False, max_concurrent_downloads=2
     )
-    app = MonsterSirenApp(config)
+    app = MonsterSirenApp(config, cache_path=tmp_path / "catalog-cache.json")
     async with app.run_test(size=(100, 32)) as pilot:
         for _ in range(100):
             await asyncio.sleep(0.03)
@@ -473,7 +473,7 @@ async def test_tui_real_download_result_and_mode_selection(
 ):
     monkeypatch.setattr("msr_music_tool.site.BASE_URL", server.url)
     config = AppConfig(tmp_path / "config.toml", tmp_path / "out", False)
-    app = MonsterSirenApp(config)
+    app = MonsterSirenApp(config, cache_path=tmp_path / "catalog-cache.json")
     async with app.run_test(size=(100, 32)) as pilot:
         for _ in range(100):
             await asyncio.sleep(0.03)

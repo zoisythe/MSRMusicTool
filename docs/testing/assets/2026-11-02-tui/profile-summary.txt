@@ -1,0 +1,99 @@
+Mon Nov  2 22:38:37 2026    C:\Users\Zoisythe\Code\Project\MSRMusicTool\build\tui-diagnosis\profile-302.pstats
+
+         47139516 function calls (47003032 primitive calls) in 20.483 seconds
+
+   Ordered by: cumulative time
+   List reduced from 1705 to 30 due to restriction <30>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+  526/523    0.056    0.000   23.361    0.045 base_events.py:1981(_run_once)
+65872/65870    0.046    0.000   20.725    0.000 events.py:87(_run)
+65872/65870    0.068    0.000   20.473    0.000 {method 'run' of '_contextvars.Context' objects}
+90675/78074    0.078    0.000   17.096    0.000 _callback.py:62(invoke)
+90675/78074    0.096    0.000   17.004    0.000 _callback.py:45(_invoke)
+       44    0.034    0.001   11.754    0.267 screen.py:1316(_refresh_layout)
+       68    0.000    0.000   10.613    0.156 timer.py:143(_run_timer)
+       68    0.001    0.000   10.613    0.156 timer.py:150(_run)
+       37    0.000    0.000   10.609    0.287 timer.py:180(_tick)
+       45    0.001    0.000   10.608    0.236 screen.py:1236(_on_timer_update)
+    66/65    0.001    0.000   10.580    0.163 _compositor.py:525(_arrange_root)
+ 27859/65    0.259    0.000   10.577    0.163 _compositor.py:548(add_widget)
+       44    0.023    0.001   10.136    0.230 _compositor.py:365(reflow)
+15197/10295    0.281    0.000    9.391    0.001 widget.py:1736(_get_box_model)
+18803/13297    0.045    0.000    9.337    0.001 widget.py:1335(arrange)
+9267/4365    0.168    0.000    9.285    0.002 _arrange.py:39(arrange)
+9250/4348    0.220    0.000    8.988    0.002 vertical.py:20(arrange)
+9263/4361    0.113    0.000    8.669    0.002 _resolve.py:218(resolve_box_models)
+    36484    0.041    0.000    8.474    0.000 message_pump.py:562(_process_messages)
+    63449    0.183    0.000    7.447    0.000 message_pump.py:707(_dispatch_message)
+14119/9519    0.027    0.000    7.286    0.001 widget.py:1912(get_content_height)
+     5506    0.021    0.000    7.231    0.001 layout.py:250(get_content_height)
+    55600    0.149    0.000    6.609    0.000 message_pump.py:810(_on_message)
+    29650    0.257    0.000    6.488    0.000 message_pump.py:634(_process_messages_loop)
+    37309    0.025    0.000    6.042    0.000 message_pump.py:802(on_event)
+     8646    0.024    0.000    5.698    0.001 widget.py:1881(get_content_width)
+     9179    0.017    0.000    5.622    0.001 widget.py:4460(_render)
+     6540    0.010    0.000    5.560    0.001 visual.py:75(visualize)
+     4347    0.003    0.000    5.558    0.001 _static.py:77(render)
+     4347    0.009    0.000    5.554    0.001 _static.py:52(visual)
+
+
+Mon Nov  2 22:38:37 2026    C:\Users\Zoisythe\Code\Project\MSRMusicTool\build\tui-diagnosis\profile-302.pstats
+
+         47139516 function calls (47003032 primitive calls) in 20.483 seconds
+
+   Ordered by: internal time
+   List reduced from 1705 to 18 due to restriction <18>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+   611248    2.109    0.000    3.428    0.000 difflib.py:622(quick_ratio)
+  6497602    0.883    0.000    0.903    0.000 {method 'get' of 'dict' objects}
+  6594794    0.666    0.000    0.666    0.000 {method '__contains__' of 'dict' objects}
+   146301    0.536    0.000    0.821    0.000 message_pump.py:743(_get_dispatch_methods)
+     4048    0.459    0.000    5.071    0.001 difflib.py:666(get_close_matches)
+   667920    0.431    0.000    0.723    0.000 difflib.py:651(real_quick_ratio)
+   945726    0.371    0.000    0.597    0.000 styles.py:1507(get_rule)
+7600/7263    0.363    0.000    2.542    0.000 stylesheet.py:470(apply)
+  1426742    0.344    0.000    0.407    0.000 {built-in method builtins.hasattr}
+  1815399    0.325    0.000    0.461    0.000 {built-in method builtins.isinstance}
+    42/32    0.310    0.007    0.319    0.010 {method 'get' of '_queue.SimpleQueue' objects}
+3020485/3018124    0.293    0.000    0.295    0.000 {built-in method builtins.len}
+15197/10295    0.281    0.000    9.391    0.001 widget.py:1736(_get_box_model)
+ 27859/65    0.259    0.000   10.577    0.163 _compositor.py:548(add_widget)
+    29650    0.257    0.000    6.488    0.000 message_pump.py:634(_process_messages_loop)
+    58751    0.254    0.000    0.296    0.000 fractions.py:763(_add)
+   391315    0.241    0.000    0.701    0.000 reactive.py:290(__get__)
+      577    0.233    0.000    0.233    0.000 {built-in method _overlapped.GetQueuedCompletionStatus}
+
+
+   Ordered by: internal time
+   List reduced from 1705 to 4 due to restriction <'get_close_matches|get_suggestion|parse_style'>
+
+Function                           was called by...
+                                       ncalls  tottime  cumtime
+difflib.py:666(get_close_matches)  <- 4043/2614    0.458    3.908  suggestions.py:7(get_suggestion)
+markup.py:181(parse_style)         <- 4045/2616    0.028    4.048  stylesheet.py:223(parse_style)
+stylesheet.py:223(parse_style)     <- 4427/2784    0.010    4.059  style.py:317(parse)
+suggestions.py:7(get_suggestion)   <- 4043/2614    0.007    3.914  color.py:512(parse)
+
+
+Mon Nov  2 22:38:37 2026    C:\Users\Zoisythe\Code\Project\MSRMusicTool\build\tui-diagnosis\profile-302.pstats
+
+         47139516 function calls (47003032 primitive calls) in 20.483 seconds
+
+   Ordered by: cumulative time
+   List reduced from 1705 to 10 due to restriction <'album_matches|from_markup|_prune|_register'>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+     2013    0.007    0.000    5.534    0.003 content.py:268(from_markup)
+     2331    0.027    0.000    1.890    0.001 app.py:3621(_register)
+     4675    0.011    0.000    0.130    0.000 app.py:3576(_register_child)
+     4675    0.012    0.000    0.087    0.000 widget.py:1718(_post_register)
+       26    0.006    0.000    0.049    0.002 app.py:4370(_prune)
+     4680    0.003    0.000    0.028    0.000 widget.py:4510(on_prune)
+        8    0.005    0.001    0.018    0.002 catalog.py:56(album_matches)
+       78    0.000    0.000    0.017    0.000 await_remove.py:41(await_prune)
+       55    0.000    0.000    0.001    0.000 windows_events.py:718(_register)
+       55    0.000    0.000    0.000    0.000 windows_events.py:708(_register_with_iocp)
+
+

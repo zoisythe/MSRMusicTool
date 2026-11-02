@@ -1,0 +1,10 @@
+{
+  "tests.xml": {
+    "sha256": "1802c621006b83a5db3136421ca2c22b9382e59d64f145f34956b092c0842b08",
+    "bytes": 10908
+  },
+  "wheel.json": {
+    "sha256": "4674c932153daeaeb13c6f181dfb220ad594b4e9a7b5c97acff93a56904df82d",
+    "bytes": 5163
+  }
+}

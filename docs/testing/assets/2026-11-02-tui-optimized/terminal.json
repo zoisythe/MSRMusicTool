@@ -1,0 +1,38 @@
+{
+  "command": "msr-tool",
+  "surface": "Windows PowerShell PTY",
+  "date": "2026-11-02",
+  "checks": [
+    {
+      "action": "launch",
+      "passed": true,
+      "labels_visible": true,
+      "cache_visible": true
+    },
+    {
+      "action": "select",
+      "passed": true
+    },
+    {
+      "action": "detail",
+      "passed": true
+    },
+    {
+      "action": "back",
+      "passed": true
+    },
+    {
+      "action": "immediate_search_text",
+      "passed": true
+    },
+    {
+      "action": "close_search",
+      "passed": true
+    },
+    {
+      "action": "quit",
+      "passed": true,
+      "exit_code": 0
+    }
+  ]
+}

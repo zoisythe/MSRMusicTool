@@ -1,0 +1,148 @@
+[
+  {
+    "albums": 302,
+    "songs": 919,
+    "variant": "once",
+    "suggestions": {
+      "grey50": 4046
+    },
+    "timings": {
+      "startup_ms": 662.11,
+      "down_ms": 142.01,
+      "select_album_ms": 497.55,
+      "deselect_album_ms": 648.74,
+      "cached_detail_ms": 133.86,
+      "back_to_catalog_ms": 578.38,
+      "open_search_ms": 306.06,
+      "search_a_ms": 563.99,
+      "clear_search_ms": 526.18,
+      "close_search_ms": 972.39
+    },
+    "refreshes": [
+      {
+        "phase": "startup",
+        "caller": "on_mount",
+        "query": "",
+        "ms": 91.6
+      },
+      {
+        "phase": "startup",
+        "caller": "on_screen_resume",
+        "query": "",
+        "ms": 0.0
+      },
+      {
+        "phase": "select_album_ms",
+        "caller": "action_toggle_album",
+        "query": "",
+        "ms": 261.38
+      },
+      {
+        "phase": "deselect_album_ms",
+        "caller": "action_toggle_album",
+        "query": "",
+        "ms": 262.71
+      },
+      {
+        "phase": "back_to_catalog_ms",
+        "caller": "on_screen_resume",
+        "query": "",
+        "ms": 149.3
+      },
+      {
+        "phase": "search_a_ms",
+        "caller": "search_changed",
+        "query": "a",
+        "ms": 278.03
+      },
+      {
+        "phase": "clear_search_ms",
+        "caller": "search_changed",
+        "query": "",
+        "ms": 139.89
+      },
+      {
+        "phase": "close_search_ms",
+        "caller": "action_cancel_or_exit",
+        "query": "",
+        "ms": 625.92
+      }
+    ],
+    "lag_budget_exceeded": true,
+    "heartbeat_max_lag_ms": 483.69,
+    "heartbeat_p95_lag_ms": 210.64
+  },
+  {
+    "albums": 302,
+    "songs": 919,
+    "variant": "once",
+    "suggestions": {
+      "grey50": 4046
+    },
+    "timings": {
+      "startup_ms": 610.33,
+      "down_ms": 294.52,
+      "select_album_ms": 560.4,
+      "deselect_album_ms": 790.79,
+      "cached_detail_ms": 98.42,
+      "back_to_catalog_ms": 523.68,
+      "open_search_ms": 280.11,
+      "search_a_ms": 580.98,
+      "clear_search_ms": 580.76,
+      "close_search_ms": 941.27
+    },
+    "refreshes": [
+      {
+        "phase": "startup",
+        "caller": "on_mount",
+        "query": "",
+        "ms": 109.78
+      },
+      {
+        "phase": "startup",
+        "caller": "on_screen_resume",
+        "query": "",
+        "ms": 0.0
+      },
+      {
+        "phase": "select_album_ms",
+        "caller": "action_toggle_album",
+        "query": "",
+        "ms": 304.56
+      },
+      {
+        "phase": "deselect_album_ms",
+        "caller": "action_toggle_album",
+        "query": "",
+        "ms": 294.77
+      },
+      {
+        "phase": "back_to_catalog_ms",
+        "caller": "on_screen_resume",
+        "query": "",
+        "ms": 133.67
+      },
+      {
+        "phase": "search_a_ms",
+        "caller": "search_changed",
+        "query": "a",
+        "ms": 103.59
+      },
+      {
+        "phase": "clear_search_ms",
+        "caller": "search_changed",
+        "query": "",
+        "ms": 175.21
+      },
+      {
+        "phase": "close_search_ms",
+        "caller": "action_cancel_or_exit",
+        "query": "",
+        "ms": 312.83
+      }
+    ],
+    "lag_budget_exceeded": true,
+    "heartbeat_max_lag_ms": 417.74,
+    "heartbeat_p95_lag_ms": 203.84
+  }
+]

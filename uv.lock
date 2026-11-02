@@ -199,7 +199,7 @@ wheels = [
 
 [[package]]
 name = "msrmusictool"
-version = "0.2.1"
+version = "0.2.2"
 source = { editable = "." }
 dependencies = [
     { name = "httpx", extra = ["socks"] },
@@ -224,7 +224,7 @@ requires-dist = [
     { name = "httpx", extras = ["socks"], specifier = ">=0.28,<1" },
     { name = "platformdirs", specifier = ">=4.3,<5" },
     { name = "rich", specifier = ">=15,<16" },
-    { name = "textual", specifier = ">=1.0,<9" },
+    { name = "textual", specifier = ">=8.2.8,<9" },
 ]
 
 [package.metadata.requires-dev]

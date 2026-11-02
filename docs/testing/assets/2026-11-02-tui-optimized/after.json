@@ -1,0 +1,273 @@
+{
+  "python": "3.13.18 (main, Oct 26 2026, 14:10:48) [MSC v.1944 64 bit (AMD64)]",
+  "executable": "C:\\Users\\Zoisythe\\Code\\Project\\MSRMusicTool\\.venv\\Scripts\\python.exe",
+  "versions": {
+    "MSRMusicTool": "0.2.1",
+    "textual": "8.2.8",
+    "rich": "15.0.0",
+    "httpx": "0.28.1"
+  },
+  "app_path": "C:\\Users\\Zoisythe\\Code\\Project\\MSRMusicTool\\src\\msr_music_tool\\app.py",
+  "app_sha256": "cb71379263a5da7977b18225722b0d58d61c8321638bee3cfc121ccfeaee59b5",
+  "fixture_sha256": "9c47ee2cc8c8658b45a3ad59aca22d6c6ab1c25f7ffdd771f7744bae6ebc7ded",
+  "albums": 302,
+  "songs": 919,
+  "size": [
+    100,
+    32
+  ],
+  "method": "Pilot key dispatch plus rendering idle; search includes 60ms debounce; heartbeat excludes startup, assertions and teardown; disk-cache startup uses blocked mock network and excludes module imports",
+  "runs": [
+    {
+      "timings": {
+        "startup_ms": 67.93,
+        "down_ms": 74.59,
+        "select_album_ms": 55.12,
+        "deselect_album_ms": 46.83,
+        "cached_detail_ms": 94.33,
+        "back_to_catalog_ms": 42.92,
+        "open_search_ms": 46.0,
+        "search_a_ms": 85.0,
+        "clear_search_ms": 77.84,
+        "close_search_ms": 63.98
+      },
+      "refreshes": [
+        {
+          "phase": "startup",
+          "ms": 6.109300000389339
+        },
+        {
+          "phase": "select_album_ms",
+          "ms": 2.2781999978178646
+        },
+        {
+          "phase": "deselect_album_ms",
+          "ms": 2.1807000011904165
+        },
+        {
+          "phase": "back_to_catalog_ms",
+          "ms": 1.7703000012261327
+        },
+        {
+          "phase": "search_a_ms",
+          "ms": 18.454400000337046
+        },
+        {
+          "phase": "clear_search_ms",
+          "ms": 12.762199999997392
+        },
+        {
+          "phase": "close_search_ms",
+          "ms": 1.4311000013549346
+        }
+      ],
+      "interaction_max_lag_ms": 17.19,
+      "cached_startup_ms": 92.83
+    },
+    {
+      "timings": {
+        "startup_ms": 106.02,
+        "down_ms": 105.7,
+        "select_album_ms": 59.26,
+        "deselect_album_ms": 57.81,
+        "cached_detail_ms": 183.62,
+        "back_to_catalog_ms": 77.46,
+        "open_search_ms": 141.83,
+        "search_a_ms": 78.75,
+        "clear_search_ms": 80.65,
+        "close_search_ms": 72.88
+      },
+      "refreshes": [
+        {
+          "phase": "startup",
+          "ms": 4.474400000617607
+        },
+        {
+          "phase": "select_album_ms",
+          "ms": 2.6355999980296474
+        },
+        {
+          "phase": "deselect_album_ms",
+          "ms": 2.6663999997253995
+        },
+        {
+          "phase": "back_to_catalog_ms",
+          "ms": 2.015399997617351
+        },
+        {
+          "phase": "search_a_ms",
+          "ms": 14.128200000413926
+        },
+        {
+          "phase": "clear_search_ms",
+          "ms": 14.2651999994996
+        },
+        {
+          "phase": "close_search_ms",
+          "ms": 1.359400001092581
+        }
+      ],
+      "interaction_max_lag_ms": 15.13,
+      "cached_startup_ms": 89.25
+    },
+    {
+      "timings": {
+        "startup_ms": 51.75,
+        "down_ms": 72.32,
+        "select_album_ms": 79.66,
+        "deselect_album_ms": 83.54,
+        "cached_detail_ms": 96.05,
+        "back_to_catalog_ms": 146.66,
+        "open_search_ms": 98.74,
+        "search_a_ms": 79.54,
+        "clear_search_ms": 81.73,
+        "close_search_ms": 70.05
+      },
+      "refreshes": [
+        {
+          "phase": "startup",
+          "ms": 4.094600000826176
+        },
+        {
+          "phase": "select_album_ms",
+          "ms": 2.532200000132434
+        },
+        {
+          "phase": "deselect_album_ms",
+          "ms": 2.116899999236921
+        },
+        {
+          "phase": "back_to_catalog_ms",
+          "ms": 1.725300000543939
+        },
+        {
+          "phase": "search_a_ms",
+          "ms": 14.321900001959875
+        },
+        {
+          "phase": "clear_search_ms",
+          "ms": 16.066100000898587
+        },
+        {
+          "phase": "close_search_ms",
+          "ms": 1.3198999986343551
+        }
+      ],
+      "interaction_max_lag_ms": 19.22,
+      "cached_startup_ms": 152.87
+    },
+    {
+      "timings": {
+        "startup_ms": 54.57,
+        "down_ms": 72.98,
+        "select_album_ms": 48.93,
+        "deselect_album_ms": 91.07,
+        "cached_detail_ms": 91.23,
+        "back_to_catalog_ms": 94.51,
+        "open_search_ms": 158.6,
+        "search_a_ms": 80.82,
+        "clear_search_ms": 78.46,
+        "close_search_ms": 109.34
+      },
+      "refreshes": [
+        {
+          "phase": "startup",
+          "ms": 4.694100000051549
+        },
+        {
+          "phase": "select_album_ms",
+          "ms": 2.2176999991643243
+        },
+        {
+          "phase": "deselect_album_ms",
+          "ms": 2.398399999947287
+        },
+        {
+          "phase": "back_to_catalog_ms",
+          "ms": 1.9300000021758024
+        },
+        {
+          "phase": "search_a_ms",
+          "ms": 15.379899999970803
+        },
+        {
+          "phase": "clear_search_ms",
+          "ms": 13.041500002145767
+        },
+        {
+          "phase": "close_search_ms",
+          "ms": 1.1477000007289462
+        }
+      ],
+      "interaction_max_lag_ms": 23.51,
+      "cached_startup_ms": 97.01
+    },
+    {
+      "timings": {
+        "startup_ms": 52.63,
+        "down_ms": 94.85,
+        "select_album_ms": 48.57,
+        "deselect_album_ms": 51.45,
+        "cached_detail_ms": 94.27,
+        "back_to_catalog_ms": 149.5,
+        "open_search_ms": 73.93,
+        "search_a_ms": 79.86,
+        "clear_search_ms": 80.73,
+        "close_search_ms": 99.91
+      },
+      "refreshes": [
+        {
+          "phase": "startup",
+          "ms": 4.343299999163719
+        },
+        {
+          "phase": "select_album_ms",
+          "ms": 2.8275000004214235
+        },
+        {
+          "phase": "deselect_album_ms",
+          "ms": 2.209199999924749
+        },
+        {
+          "phase": "back_to_catalog_ms",
+          "ms": 70.47470000179601
+        },
+        {
+          "phase": "search_a_ms",
+          "ms": 14.489999997749692
+        },
+        {
+          "phase": "clear_search_ms",
+          "ms": 13.703399999940302
+        },
+        {
+          "phase": "close_search_ms",
+          "ms": 1.3115999972797
+        }
+      ],
+      "interaction_max_lag_ms": 74.05,
+      "cached_startup_ms": 99.18
+    }
+  ],
+  "median_timings_ms": {
+    "startup_ms": 54.57,
+    "down_ms": 74.59,
+    "select_album_ms": 55.12,
+    "deselect_album_ms": 57.81,
+    "cached_detail_ms": 94.33,
+    "back_to_catalog_ms": 94.51,
+    "open_search_ms": 98.74,
+    "search_a_ms": 79.86,
+    "clear_search_ms": 80.65,
+    "close_search_ms": 72.88
+  },
+  "median_cached_startup_ms": 97.01,
+  "interaction_max_lag_ms": 74.05,
+  "gates": {
+    "cached_startup_under_300_ms": true,
+    "selection_under_200_ms": true,
+    "return_under_200_ms": true,
+    "search_restore_under_200_ms": true,
+    "interaction_lag_under_100_ms": true
+  }
+}

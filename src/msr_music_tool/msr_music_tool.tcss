@@ -27,13 +27,11 @@ Footer {
     border: round $primary;
 }
 
-ListItem {
-    height: auto;
-    min-height: 3;
-    padding: 1 2;
+OptionList > .option-list--option {
+    padding: 0 2;
 }
 
-ListItem.--highlight {
+OptionList > .option-list--option-highlighted {
     background: $accent 25%;
 }
 

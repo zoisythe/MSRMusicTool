@@ -1,0 +1,42 @@
+{
+  "python": "3.15.2",
+  "app_import_ms": 361.28,
+  "real_startup": {
+    "first_loading_screen_ms": 438.42,
+    "catalog_ready_ms": 1318.64,
+    "uncached_detail_ms": 191.56,
+    "components": [
+      {
+        "phase": "startup",
+        "component": "http_client_construct",
+        "ms": 254.65
+      },
+      {
+        "phase": "startup",
+        "component": "/api/songs",
+        "ms": 119.25
+      },
+      {
+        "phase": "startup",
+        "component": "/api/albums",
+        "ms": 269.94
+      },
+      {
+        "phase": "uncached_detail",
+        "component": "http_client_construct",
+        "ms": 22.26
+      },
+      {
+        "phase": "uncached_detail",
+        "component": "/api/album/3870/detail",
+        "ms": 115.83
+      }
+    ]
+  },
+  "input_while_waiting_detail": {
+    "wait_before_release_ms": 156.43,
+    "quit_processed_while_detail_pending": false,
+    "still_running_while_detail_pending": true,
+    "ctrl_c_until_exit_ms": 185.32
+  }
+}

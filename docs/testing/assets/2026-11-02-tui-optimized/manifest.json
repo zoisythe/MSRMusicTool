@@ -1,0 +1,30 @@
+{
+  "after.json": {
+    "sha256": "b75ef490d244de6ee31d901d2eb18ab82f2401fdf2217c9b98302782ac74456f",
+    "bytes": 7315
+  },
+  "benchmark_tui.py": {
+    "sha256": "8afca9b34e505e5778ab6e37c5f2ddb451338d8cfe2ea883d7a07e3598c3b463",
+    "bytes": 8439
+  },
+  "checks.json": {
+    "sha256": "7c42e5c70771c99d5e3dad8a37332e1ca9d474936fd6e2fde585d2736d62d2c1",
+    "bytes": 660
+  },
+  "environment.json": {
+    "sha256": "1018accfd16cf1028e12f3114499cac4bc30f13dbd6e0dde90ee0e7138b1e644",
+    "bytes": 5668
+  },
+  "installed.json": {
+    "sha256": "efc245ed5e102e48aa5a7351811e2860fcdb1fb1cd4644aad09d596e7956047d",
+    "bytes": 7369
+  },
+  "terminal.json": {
+    "sha256": "8bd6ee8d163e4c46f0efd2be170212342e56817678d026342a06643cd67eb45f",
+    "bytes": 627
+  },
+  "tests.xml": {
+    "sha256": "bf44cb677e2db663581069f5d1d39a11a206a59e85775c0bf3dd7333edf52caa",
+    "bytes": 10908
+  }
+}

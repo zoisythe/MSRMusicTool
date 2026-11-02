@@ -4,12 +4,11 @@ from pathlib import Path
 
 import httpx
 import pytest
-from textual.content import Content
-from textual.widgets import Button, Input, Label, ListView
+from rich.text import Text
+from textual.widgets import Button, Input, OptionList
 
 import msr_music_tool.app as app_module
 from msr_music_tool.app import (
-    AlbumListItem,
     AlbumScreen,
     CatalogScreen,
     ConfirmScreen,
@@ -70,7 +69,10 @@ async def test_loading_error_buttons_are_keyboard_selectable(
             return None
 
     monkeypatch.setattr(app_module, "_http_client", FakeClient)
-    app = MonsterSirenApp(AppConfig(tmp_path / "config.toml", tmp_path / "downloads", False))
+    app = MonsterSirenApp(
+        AppConfig(tmp_path / "config.toml", tmp_path / "downloads", False),
+        cache_path=tmp_path / "cache.json",
+    )
 
     async with app.run_test(size=(80, 24)) as pilot:
         await pilot.pause()
@@ -147,17 +149,18 @@ async def test_search_filters_by_song_and_escape_restores_catalog(tmp_path: Path
         await pilot.pause()
 
         search = app.screen.query_one("#search", Input)
-        albums = app.screen.query_one("#albums", ListView)
+        albums = app.screen.query_one("#albums", OptionList)
         assert search.display
         assert search.value == "needle"
-        assert len(albums.children) == 1
-        assert isinstance(albums.children[0], AlbumListItem)
-        assert albums.children[0].album_cid == "old"
+        assert albums.option_count == 1
+        assert albums.get_option_at_index(0).id == "old"
+        visible = "\n".join(albums.render_line(y).text for y in range(albums.content_size.height))
+        assert "匹配曲目" in visible and "Needle Track" in visible
 
         await pilot.press("escape")
         await pilot.pause()
         assert not search.display
-        assert len(albums.children) == 2
+        assert albums.option_count == 2
 
         await pilot.press("q")
         await pilot.pause()
@@ -170,21 +173,19 @@ async def test_album_indicators_use_requested_glyphs_and_colors(tmp_path: Path) 
 
     async with app.run_test(size=(100, 32)) as pilot:
         await pilot.pause()
-        albums = app.screen.query_one("#albums", ListView)
-        first = albums.children[0]
-        assert isinstance(first, AlbumListItem)
-        label = first.query_one(Label)
-        rendered = label.render()
-        assert isinstance(rendered, Content)
-        assert rendered.plain.startswith("○")
-        assert any(str(span.style) == "grey50" for span in rendered.spans)
+        albums = app.screen.query_one("#albums", OptionList)
+        rendered = albums.get_option_at_index(0).prompt
+        assert isinstance(rendered, Text)
+        assert rendered.plain.strip().startswith("○")
+        assert any(str(span.style) == "#808080" for span in rendered.spans)
+        visible = "\n".join(albums.render_line(y).text for y in range(albums.content_size.height))
+        assert "New Album" in visible and "Old Album" in visible
 
         await pilot.press("space")
         await pilot.pause()
-        first = albums.children[0]
-        rendered = first.query_one(Label).render()
-        assert isinstance(rendered, Content)
-        assert rendered.plain.startswith("●")
+        rendered = albums.get_option_at_index(0).prompt
+        assert isinstance(rendered, Text)
+        assert rendered.plain.strip().startswith("●")
         assert any(str(span.style) == "green" for span in rendered.spans)
 
         await pilot.press("right")
@@ -192,10 +193,9 @@ async def test_album_indicators_use_requested_glyphs_and_colors(tmp_path: Path) 
         await pilot.press("space")
         await pilot.press("left")
         await pilot.pause()
-        first = albums.children[0]
-        rendered = first.query_one(Label).render()
-        assert isinstance(rendered, Content)
-        assert rendered.plain.startswith("◐")
+        rendered = albums.get_option_at_index(0).prompt
+        assert isinstance(rendered, Text)
+        assert rendered.plain.strip().startswith("◐")
         assert any(str(span.style) == "yellow" for span in rendered.spans)
 
 

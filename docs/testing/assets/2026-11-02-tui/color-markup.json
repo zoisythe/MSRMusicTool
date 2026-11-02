@@ -1,0 +1,28 @@
+[
+  {
+    "color": "grey50",
+    "labels": 604,
+    "ms": 161.93,
+    "suggestions": {
+      "grey50": 1208
+    }
+  },
+  {
+    "color": "#808080",
+    "labels": 604,
+    "ms": 13.23,
+    "suggestions": {}
+  },
+  {
+    "color": "gray",
+    "labels": 604,
+    "ms": 12.17,
+    "suggestions": {}
+  },
+  {
+    "color": "green",
+    "labels": 604,
+    "ms": 14.0,
+    "suggestions": {}
+  }
+]

@@ -34,6 +34,12 @@ uv run msr-tool
 `python -m msr_music_tool` 提供相同入口。`msr-tool --help` 会显示当前系统实际使用的
 配置文件路径。
 
+TUI 优先显示本机缓存的曲库，并在每次启动后后台刷新官网数据。缓存保存在系统为
+MSRMusicTool 分配的用户缓存目录内，文件名为 `catalog-v1.json`，只保存专辑和歌曲摘要。
+离线时可继续浏览，
+状态栏会显示更新时间；详情和下载仍需要网络。后台更新会保留仍然有效的选择，查看
+详情、确认或下载期间的新曲库会在返回列表后应用。缓存损坏时会自动重新读取官网。
+
 ## 配置
 
 ### CLI 与下载后端
@@ -103,7 +109,8 @@ directory = "D:/Music"
 | 专辑列表 | `Space` | 选择或取消整张专辑 |
 | 专辑列表 | `Right` | 进入专辑详情 |
 | 专辑列表 | `Enter` | 查看下载确认页 |
-| 专辑列表 | `Esc` | 关闭搜索；未搜索时退出程序 |
+| 专辑列表 | `Esc` | 取消正在加载的详情或确认准备；否则关闭搜索或退出程序 |
+| 专辑列表 | `r` | 刷新曲库；在搜索框中正常输入文字 |
 | 专辑详情 | `Space` | 选择或取消单首歌曲 |
 | 专辑详情 | `Left` | 返回专辑列表 |
 | 确认页 | `Tab` / `Shift+Tab` | 在模式选择、“取消”和“确认下载”之间切换 |
@@ -161,7 +168,7 @@ uv run --no-sync python scripts/verify_standalone.py
 
 ```console
 uv run --no-sync python scripts/verify_standalone.py --live --report build/standalone-acceptance.json
-uv run --no-sync python scripts/verify_standalone.py --live --wheel dist/msrmusictool-0.2.1-py3-none-any.whl --report build/wheel-acceptance.json
+uv run --no-sync python scripts/verify_standalone.py --live --wheel dist/msrmusictool-0.2.2-py3-none-any.whl --report build/wheel-acceptance.json
 ```
 
 `tests/test_e2e.py` 使用实际本地 HTTP 服务及限速合成媒体验证 CLI/TUI 的完整下载和

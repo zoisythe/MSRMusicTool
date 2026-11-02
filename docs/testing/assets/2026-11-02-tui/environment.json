@@ -1,0 +1,115 @@
+{
+  "date": "2026-11-02",
+  "timezone": "Asia/Shanghai",
+  "platform": "Windows-11-10.0.26340-SP0",
+  "python": "3.15.2 (main, Oct 26 2026, 14:23:21) [MSC v.1951 64 bit (AMD64)]",
+  "executable": "C:\\Users\\Zoisythe\\scoop\\persist\\uv\\tools\\versions\\msrmusictool\\Scripts\\python.exe",
+  "installed_directory": "C:\\Users\\Zoisythe\\scoop\\persist\\uv\\tools\\versions\\msrmusictool\\Lib\\site-packages\\msr_music_tool",
+  "versions": {
+    "MSRMusicTool": "0.2.1",
+    "textual": "8.2.8",
+    "rich": "15.0.0",
+    "httpx": "0.28.1"
+  },
+  "source_hash_comparison": [
+    {
+      "file": "__init__.py",
+      "source_sha256": "3a23f3fec52e395411c80ac76fe36bd3e48ab656ac036b21c5b38aa34724b666",
+      "installed_sha256": "3a23f3fec52e395411c80ac76fe36bd3e48ab656ac036b21c5b38aa34724b666",
+      "match": true
+    },
+    {
+      "file": "__main__.py",
+      "source_sha256": "f87fac2015e0bc2f9dfd1518c1fe2573047ded5628942aea99f0325a6f722c17",
+      "installed_sha256": "f87fac2015e0bc2f9dfd1518c1fe2573047ded5628942aea99f0325a6f722c17",
+      "match": true
+    },
+    {
+      "file": "app.py",
+      "source_sha256": "b0cc7d4f7bb9f6af9b73e42717433f214d012f173eb7f2f78a346ec8d876d167",
+      "installed_sha256": "b0cc7d4f7bb9f6af9b73e42717433f214d012f173eb7f2f78a346ec8d876d167",
+      "match": true
+    },
+    {
+      "file": "catalog.py",
+      "source_sha256": "1e320196361e2f84b7044fbabc513aba9c6caec54ab33bb034a2dc13422dd902",
+      "installed_sha256": "1e320196361e2f84b7044fbabc513aba9c6caec54ab33bb034a2dc13422dd902",
+      "match": true
+    },
+    {
+      "file": "cli.py",
+      "source_sha256": "d8a1e874826d0b27379f086ccb770837bd13763deff366a7d0011cbe114ff3ed",
+      "installed_sha256": "d8a1e874826d0b27379f086ccb770837bd13763deff366a7d0011cbe114ff3ed",
+      "match": true
+    },
+    {
+      "file": "commit_message.py",
+      "source_sha256": "91343d6218036f44a6e4242a1e8be4d23c51a9ef98f43ff149a9cea9cdbd10be",
+      "installed_sha256": "91343d6218036f44a6e4242a1e8be4d23c51a9ef98f43ff149a9cea9cdbd10be",
+      "match": true
+    },
+    {
+      "file": "config.py",
+      "source_sha256": "3a82942cc75d8dbc33127866252115d06171e79f654f87433040d23b6b8c40e2",
+      "installed_sha256": "3a82942cc75d8dbc33127866252115d06171e79f654f87433040d23b6b8c40e2",
+      "match": true
+    },
+    {
+      "file": "downloader.py",
+      "source_sha256": "06d25057ab2309a72657cda31fa7e143a1d1430dbecfe965132b71d707d5d4d6",
+      "installed_sha256": "06d25057ab2309a72657cda31fa7e143a1d1430dbecfe965132b71d707d5d4d6",
+      "match": true
+    },
+    {
+      "file": "models.py",
+      "source_sha256": "d9b973dc12e84be4b69092012060794ec9fa61c58769ecbcca4e338c8e102e8c",
+      "installed_sha256": "d9b973dc12e84be4b69092012060794ec9fa61c58769ecbcca4e338c8e102e8c",
+      "match": true
+    },
+    {
+      "file": "msr_music_tool.tcss",
+      "source_sha256": "10aaa754bfda1fdd64604b6dfdb539fb727c60b7a6e2c5b9b2fbac6c8bebcf9e",
+      "installed_sha256": "10aaa754bfda1fdd64604b6dfdb539fb727c60b7a6e2c5b9b2fbac6c8bebcf9e",
+      "match": true
+    },
+    {
+      "file": "naming.py",
+      "source_sha256": "7d48fbb11f41bdd1f62f417ce026ef7476f8dfc6f5e4939f20fba2f27a69bba5",
+      "installed_sha256": "7d48fbb11f41bdd1f62f417ce026ef7476f8dfc6f5e4939f20fba2f27a69bba5",
+      "match": true
+    },
+    {
+      "file": "progress.py",
+      "source_sha256": "4f2edbfd5687c68e87b3eebcb05cc76c7863ced9717b55e2705b12e005a18c39",
+      "installed_sha256": "4f2edbfd5687c68e87b3eebcb05cc76c7863ced9717b55e2705b12e005a18c39",
+      "match": true
+    },
+    {
+      "file": "service.py",
+      "source_sha256": "2f8ded172c0e5e725a10cc454c7ba8377900e536eea9a752552dd5eec5b13e31",
+      "installed_sha256": "2f8ded172c0e5e725a10cc454c7ba8377900e536eea9a752552dd5eec5b13e31",
+      "match": true
+    },
+    {
+      "file": "site.py",
+      "source_sha256": "eb0f1714e912d597d60e281a9bae7ba4087b6c7933d52744939da9a0c5acef97",
+      "installed_sha256": "eb0f1714e912d597d60e281a9bae7ba4087b6c7933d52744939da9a0c5acef97",
+      "match": true
+    },
+    {
+      "file": "transfers.py",
+      "source_sha256": "bb6da1873aedae83ede7894e93695a994e9d4e41936ffd1001176b8dc26830bd",
+      "installed_sha256": "bb6da1873aedae83ede7894e93695a994e9d4e41936ffd1001176b8dc26830bd",
+      "match": true
+    }
+  ],
+  "main_repetitions": 3,
+  "once_repetitions": 2,
+  "control_repetitions": 2,
+  "terminal_size": [
+    100,
+    32
+  ],
+  "method": "Textual run_test and Pilot key dispatch; preloaded public catalog and cached album details; no audio downloads; experimental overrides in memory only",
+  "main_profile_environment": "Development environment Python 3.13.18; same Textual 8.2.8 and app source; profile timings are for hotspot attribution only"
+}
