@@ -1,192 +1,97 @@
-# MSRMusicTool
+# msr-music-tool
 
-MSRMusicTool 是一个基于 Python 和 Textual 的塞壬唱片音乐下载工具。它从
+`msr-music-tool` 是一个用 Go 编写的塞壬唱片音乐下载工具。它从
 [Monster Siren Records](https://monster-siren.hypergryph.com/music) 获取专辑与歌曲索引，
 支持终端内搜索、按专辑或单曲选择，以及批量下载音频、LRC 歌词和专辑封面。
 
-## 下载独立版本
+## 下载与安装
 
-可以从 [Releases](https://github.com/zoisythe/MSRMusicTool/releases/latest) 下载对应系统的
-`msr-tool-*` 单文件程序。独立版本已经包含 Python 和全部依赖，无需另外安装运行环境。
+从 [GitHub Releases](https://github.com/zoisythe/MSRMusicTool/releases) 下载并解压对应的 ZIP。
+每个 ZIP 包含一个独立程序。发行说明列出 ZIP 的 SHA-256。
 
-- Windows：下载 `.exe` 文件后在终端中运行。
-- Linux、macOS：下载后先执行 `chmod +x msr-tool-*`，再从终端启动。
-- macOS 构建未签名；首次运行时可能需要在系统安全设置中确认。
+| 系统 | 可选架构 | 运行方式 |
+| --- | --- | --- |
+| Windows | `amd64`、`arm64`、`i686` | 双击 `msr-music-tool.exe` 打开终端 TUI，或从终端运行 |
+| Linux | `amd64`、`arm64`、`armv7`、`i686` | 在终端运行 `./msr-music-tool` |
+| macOS | `universal`（Intel 和 Apple silicon） | 在终端运行 `./msr-music-tool` |
 
-`SHA256SUMS` 提供所有 Release 文件的 SHA-256 校验值。
+Linux 和 macOS 如果解压后没有执行权限，可运行 `chmod +x msr-music-tool`。
+macOS 产物使用 ad-hoc 签名，首次运行可能需要在系统安全设置中确认。
 
-## 安装与运行
+Windows 和 Linux 第一次打开 TUI 时，可将程序复制到 `~/.local/bin` 并加入当前用户 PATH。
+确认后重新打开终端即可按命令名运行。也可以选择便携运行，之后在 TUI 设置中再次安装。
+从 Python 版升级时，请手动下载 Go 版。新命令为 `msr-music-tool`，现有配置和曲库缓存可继续使用。
 
-需要 Python 3.13 或更高版本；源码环境默认使用 3.13。使用 [uv](https://docs.astral.sh/uv/) 安装：
+## CLI
 
-```console
-uv tool install .
-msr-tool
-```
-
-在源码仓库中也可以直接运行：
-
-```console
-uv sync --dev
-uv run msr-tool
-```
-
-`python -m msr_music_tool` 提供相同入口。`msr-tool --help` 会显示当前系统实际使用的
-配置文件路径。
-
-TUI 优先显示本机缓存的曲库，并在每次启动后后台刷新官网数据。缓存保存在系统为
-MSRMusicTool 分配的用户缓存目录内，文件名为 `catalog-v1.json`，只保存专辑和歌曲摘要。
-离线时可继续浏览，
-状态栏会显示更新时间；详情和下载仍需要网络。后台更新会保留仍然有效的选择，查看
-详情、确认或下载期间的新曲库会在返回列表后应用。缓存损坏时会自动重新读取官网。
-
-## 配置
-
-### CLI 与下载后端
-
-无参数启动 TUI；CLI 不打开交互界面：
+无参数启动 TUI。子命令直接输出结果，适合脚本使用。
 
 ```console
-msr-tool search "月明人间" "其他歌曲" "https://monster-siren.hypergryph.com/music/953935"
-msr-tool download 953935 --mode audio-lyrics --config ./config.toml --output ./Music
+msr-music-tool search "月明人间" "其他歌曲" "https://monster-siren.hypergryph.com/music/953935"
+msr-music-tool download 953935 --mode audio-lyrics --config ./config.toml --output ./Music
 ```
 
-搜索接受多个名称（忽略大小写的子串）、六位歌曲 ID、官网桌面或移动歌曲链接；按输入顺序
-合并并去重。下载仅接受六位 ASCII 数字 ID。模式为 `all`（音频、歌词、封面）、`audio`
-（音频）、`audio-lyrics`（音频和歌词），默认 `all`；TUI 确认页也可以选择模式。
+搜索接受多个名称（忽略大小写的子串）、六位歌曲 ID、官网桌面或移动歌曲链接，按输入顺序
+合并并去重。下载接受六位 ASCII 数字 ID。模式为 `all`（音频、歌词、封面）、
+`audio`（音频）和 `audio-lyrics`（音频和歌词），默认 `all`。TUI 确认页也可以选择模式。
 
-```toml
-[download]
-directory = "D:/Music"
-backend = "http" # http 或 aria2
-max_concurrent_downloads = 4 # 同时传输的资源数，1–32
+搜索结果写入 stdout，下载状态和诊断写入 stderr。退出码包括成功 0、无匹配或下载失败 1、
+参数或配置错误 2、中断 130。CLI 和 TUI 显示资源字节进度、下载速度和歌曲完成数。
+长度未知时显示 `?`，重定向到文件时使用普通文本。
 
-[rpc]
-endpoint = "http://127.0.0.1:6800/jsonrpc"
-secret = ""
-poll_interval = 0.5 # 秒，0.1–60
-# directory = "/shared/music" # 引擎侧映射目录，必须是绝对路径
-```
+## TUI 与配置
 
-`--config` 选择 TOML 文件，显式指定的文件不存在会报错；`--output` 临时覆盖目录，其相对
-路径以启动目录为基准。两者也可用于无子命令的 TUI 启动。并发数、RPC 参数只在
-TOML 中配置；旧的仅含 `download.directory` 的配置仍然有效。启用 `rpc.directory` 映射
-时，不允许 `--output` 指向其他目录。
-
-CLI 搜索结果写入 stdout，下载状态和诊断写入 stderr；终端每秒最多刷新五次，重定向时
-输出普通文本。退出码为成功 0、无匹配或下载失败 1、参数或配置错误 2、中断 130。
-CLI 和 TUI 统一使用 uv 风格进度：左侧名称、中间绿色细条、右侧已下载量/总量及下载速度，
-不显示 ETA。
-不再提供样式配置，旧配置中的 `progress_style` 被忽略。未知长度显示已下载量和 `?`，
-进度条使用移动动画。
-
-RPC 连接由用户启动的 Aria2 兼容引擎，不自动启动或回退后端。音频、远端歌词和封面由
-引擎下载；简介歌词与封面复制在本机处理。引擎目录必须可由本工具访问（本机或共享
-目录）；完成后检查文件并原子替换。工具只限制自己的资源任务数，不修改引擎全局
-设置。Ctrl+C 最多等待五秒取消本次任务；取消无法确认时会报告 GID 并保留临时文件，
-不影响引擎内其他任务。暂不支持无共享磁盘的远端输出、跨进程恢复或提交后退出。
-
-HTTP 使用异步网络并发和受限磁盘线程；CLI/TUI 实时展示资源字节进度、下载速度和歌曲完成数。
-同专辑封面只传输一次。传输重试会重置当前资源字节计数。
-
-配置文件名为 `config.toml`，位于操作系统的用户配置目录下。文件内容如下：
-
-```toml
-[download]
-directory = "D:/Music"
-```
-
-- 相对路径以 `config.toml` 所在目录为基准，支持 `~`。
-- 未创建配置文件时，程序下载到启动目录下的 `MonsterSirenRecording`。
-- 配置目录后，文件直接写入该目录，不再创建 `MonsterSirenRecording` 子目录。
-- 配置文件存在但格式错误时，程序会报告路径和错误字段，不会使用默认值继续运行。
-
-## 快捷键
+TUI 优先显示本机的 `catalog-v1.json`，随后后台刷新官网数据。离线时可浏览缓存，详情和下载
+需要网络。刷新会保留仍有效的选择，查看详情、确认或下载期间收到的新曲库会在回到列表后应用。
+损坏的缓存会触发重新读取官网。
 
 | 页面 | 按键 | 操作 |
 | --- | --- | --- |
-| 专辑列表 | `/` | 搜索专辑名和歌曲名 |
-| 专辑列表 | `Space` | 选择或取消整张专辑 |
-| 专辑列表 | `Right` | 进入专辑详情 |
-| 专辑列表 | `Enter` | 查看下载确认页 |
-| 专辑列表 | `Esc` | 取消正在加载的详情或确认准备；否则关闭搜索或退出程序 |
-| 专辑列表 | `r` | 刷新曲库；在搜索框中正常输入文字 |
-| 专辑详情 | `Space` | 选择或取消单首歌曲 |
-| 专辑详情 | `Left` | 返回专辑列表 |
-| 确认页 | `Tab` / `Shift+Tab` | 在模式选择、“取消”和“确认下载”之间切换 |
-| 确认页模式选择 | `Enter` / `Up` / `Down` | 打开模式列表并选择下载资源 |
-| 确认页按钮 | `Left` / `Up` / `Right` / `Down` | 在“取消”和“确认下载”之间切换 |
-| 确认页 | `Enter` | 执行当前选中的按钮 |
-| 确认页 | `Esc` | 取消并保留已有选择 |
-| 结果页 | `Left` / `Up` / `Right` / `Down` / `Tab` | 在“返回主界面”和“退出”之间切换 |
-| 结果页 | `Enter` | 执行当前选中的按钮 |
-| 结果页 | `Esc` | 返回专辑列表 |
-| 结果页 | `q` | 退出程序；`q` 在其他页面不会退出 |
-| 任意页面 | `Ctrl+C` | 退出程序并尽力取消本批次下载 |
+| 专辑列表 | `/`、`Space`、`Right`、`Enter` | 搜索、选择整张专辑、查看详情、确认下载 |
+| 专辑列表 | `r`、`F2`、`u` | 刷新曲库、打开设置、查看可用更新 |
+| 专辑列表 | `Esc` | 取消详情或下载准备、退出搜索或退出程序 |
+| 专辑详情 | `Space`、`Left` | 选择单曲、返回专辑列表 |
+| 确认页 | `Tab` / `Shift+Tab`、`Enter`、`Esc` | 切换选项、确认、取消 |
+| 结果页 | `Tab`、`Enter`、`Esc`、`q` | 切换按钮、执行按钮、返回、退出 |
+| 设置 | `Ctrl+S`、`Esc` | 保存或放弃修改 |
+| 设置 | `F3`、`F4`、`F5`、`F6` | 检查或查看更新、安装到用户目录、恢复预设色、浏览下载目录 |
+| 任意页面 | `Ctrl+C` | 退出，并尽力取消本批次下载 |
 
-专辑状态使用以下标记，并按该顺序排列：
+专辑以全选 `●`、部分选中 `◐`、未选 `○` 的顺序排列，同一状态内沿用官网顺序。
 
-- `●` 绿色：全选
-- `◐` 黄色：部分选中
-- `○` 灰色：未选择
+可在设置页修改下载目录、后端、并发数和 RPC 参数，也可直接编辑 [config.example.toml](config.example.toml)
+中的字段。用 `--help` 查看系统默认配置路径。显式指定的 `--config` 必须存在。相对配置目录以
+TOML 文件所在目录为基准，支持 `~`。没有配置时下载到启动目录下的 `MonsterSirenRecording`。
+`--output` 临时覆盖目录，其相对路径以启动目录为基准。设置会保存配置值，覆盖只影响本次运行。
 
-同一状态内采用官网返回的专辑顺序。官网接口没有单独的发行时间字段，因此程序不会显示
-从封面地址推测的日期。
+TUI 可选择终端默认、深色、浅色和高对比主题。每个颜色项接受 `#RRGGBB`，留空时继承预设。
+编辑即时预览，保存后生效。RPC 密钥在表单中遮蔽，配置文件仍以 TOML 保存。
+
+启动时默认后台检查更新，可在设置中关闭。确认下载后，程序校验 GitHub 发布资产的 SHA-256，
+解压并替换原路径的可执行文件，再尝试重启。替换完成后只保留新版。正式版接收正式更新，
+预览版也可接收更高的预览版本。
 
 ## 下载规则
 
-- 文件基本名为 `塞壬唱片-MSR - 歌曲名`，音频保持远端格式，不进行转码。
-- 歌词保存为同名 `.lrc`。官网没有歌词时，使用专辑简介原文；简介为空时创建空文件。
-- 封面保存为同名 `.jpg` 或 `.png`。同一批次内每张专辑只下载一次封面，再复制给各歌曲。
-- 全部文件平铺在下载目录。官网存在重名曲目时，冲突项追加 `[专辑名-歌曲CID]`。
-- Windows 禁用字符会替换为视觉相近的全角字符，以保证三个操作系统得到一致文件名。
-- 已存在且长度与远端一致的资源会跳过；不完整文件会通过临时文件重新下载并原子替换。
-- 一首歌的音频、歌词或封面任一失败时，该歌曲会继续保持选中，返回后可再次下载。
+- 文件基本名为 `塞壬唱片-MSR - 歌曲名`，音频保持远端格式。歌词保存为同名 `.lrc`，官网没有歌词时
+  使用专辑简介原文，简介为空时创建空文件。
+- 封面使用同名文件。一个批次里每张专辑只传输一次封面，再复制给需要的歌曲。
+- 文件平铺输出。重名曲目追加 `[专辑名-歌曲CID]`，Windows 禁用字符统一替换为相近的全角字符。
+- 已存在且长度匹配的资源会跳过。下载先写入临时文件，完整后再替换目标。TUI 保留下载失败的歌曲供重试。
+- 默认使用 HTTP，不需要另外启动下载器。Aria2 RPC 由用户配置并启动。使用远端目录映射时，
+  引擎和工具须能访问同一共享目录，`--output` 必须与配置目录一致。工具只管理本批次的任务。
+  Ctrl+C 最多等待五秒取消，无法确认取消时报告 GID 并保留该任务的临时文件。
 
 ## 开发与测试
 
 ```console
-uv sync --dev
-uv run pre-commit install
-uv run pre-commit run --all-files
-uv run pytest
-uv build
+go run ./cmd/msr-music-tool
+go test ./...
+go vet ./...
+go build ./cmd/msr-music-tool
 ```
 
-pre-commit 会运行 Ruff 检查和格式化，并通过 `commit-msg` hook 要求提交信息符合
-[Conventional Commits](https://www.conventionalcommits.org/)，例如 `feat: add album search`。
-
-构建当前系统的独立单文件程序：
-
-```console
-uv sync --group standalone
-uv run --no-sync python scripts/build_standalone.py
-uv run --no-sync python scripts/verify_standalone.py
-```
-
-完整发布验收（歌曲仅保存在临时目录，退出后清理）：
-
-```console
-uv run --no-sync python scripts/verify_standalone.py --live --report build/standalone-acceptance.json
-uv run --no-sync python scripts/verify_standalone.py --live --wheel dist/msrmusictool-0.2.2-py3-none-any.whl --report build/wheel-acceptance.json
-```
-
-`tests/test_e2e.py` 使用实际本地 HTTP 服务及限速合成媒体验证 CLI/TUI 的完整下载和
-实时进度。设置 `MSR_ARIA2_BINARY`、`MSR_ARIA_NEXT_BINARY` 为引擎可执行文件路径后，
-完整测试还会启动真实引擎验证 RPC 下载、断连恢复、提交去重及取消隔离。未设置时
-对应引擎验收明确跳过。CI 在三个系统上使用 Python 3.13；静态检查和 Python 包构建仅在
-Linux 执行，Windows 测试自动下载 Aria2 和 Aria2 Next 的最新正式 Release 执行真实引擎验收。
-Release 使用 Python 3.13 构建，并执行独立程序的 `--live` 验收。
-
-构建结果写入 `release/`。推送 `v*` 标签时，GitHub Actions 会分别构建 Windows、Linux、
-macOS 独立程序，并自动创建 GitHub Release。
-
-常规测试完全离线。设置 `MSR_RUN_LIVE_TESTS=1` 后可运行只读取索引和媒体 HEAD 的官网契约测试：
-
-```console
-MSR_RUN_LIVE_TESTS=1 uv run pytest -m integration
-```
-
-项目仅访问官网公开接口，仓库不包含音乐文件。
-
-0.2.0 发布时的历史测试环境、结果和证据见 [验收记录](docs/testing/0.2.0-acceptance.md)。
+`MSR_RUN_LIVE_TESTS=1` 启用只读的官网契约检查。设置 `MSR_ARIA2_BINARY` 和 `MSR_ARIA_NEXT_BINARY`
+可用真实引擎执行 RPC 测试，包括断连恢复、提交去重和取消隔离。常规测试使用本地合成媒体。
+GitHub Actions 在版本标签推送时构建八个 ZIP，从各 ZIP 解压执行冒烟测试，再创建 Release。
+仓库不包含音乐文件。

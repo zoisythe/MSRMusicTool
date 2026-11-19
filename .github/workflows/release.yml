@@ -2,68 +2,194 @@ name: Release
 
 on:
   push:
-    tags:
-      - "v*"
+    tags: ['v*']
 
 permissions:
   contents: read
 
+concurrency:
+  group: release-${{ github.ref_name }}
+  cancel-in-progress: false
+
 jobs:
-  build-standalone:
-    name: Build ${{ matrix.os }}
+  tests:
+    uses: ./.github/workflows/ci.yml
+
+  binaries:
+    name: Build ${{ matrix.target }}
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-    runs-on: ${{ matrix.os }}
+        include:
+          - {goos: windows, goarch: amd64, target: windows-amd64, suffix: .exe}
+          - {goos: windows, goarch: arm64, target: windows-arm64, suffix: .exe}
+          - {goos: windows, goarch: '386', target: windows-i686, suffix: .exe}
+          - {goos: linux, goarch: amd64, target: linux-amd64, suffix: ''}
+          - {goos: linux, goarch: arm64, target: linux-arm64, suffix: ''}
+          - {goos: linux, goarch: arm, target: linux-armv7, suffix: ''}
+          - {goos: linux, goarch: '386', target: linux-i686, suffix: ''}
     steps:
       - uses: actions/checkout@v6
-      - uses: astral-sh/setup-uv@v9.0.0
+      - uses: actions/setup-go@v6
         with:
-          version: "0.13.5"
-          enable-cache: true
-      - run: uv sync --frozen --group standalone
-      - run: uv run --no-sync python scripts/build_standalone.py
-      - run: uv run --no-sync python scripts/verify_standalone.py --live
+          go-version-file: go.mod
+      - name: Build and package
+        env:
+          TARGET_OS: ${{ matrix.goos }}
+          TARGET_ARCH: ${{ matrix.goarch }}
+          TARGET: ${{ matrix.target }}
+          SUFFIX: ${{ matrix.suffix }}
+        run: |
+          binary="build/msr-music-tool$SUFFIX"
+          GOOS="$TARGET_OS" GOARCH="$TARGET_ARCH" GO386=softfloat GOARM=7 CGO_ENABLED=0 \
+            go build -trimpath -ldflags "-s -w -X main.version=${GITHUB_REF_NAME#v}" -o "$binary" ./cmd/msr-music-tool
+          go run ./cmd/release-tool pack "$binary" "release/msr-music-tool-$TARGET.zip"
       - uses: actions/upload-artifact@v4
         with:
-          name: standalone-${{ runner.os }}-${{ runner.arch }}
-          path: release/*
+          name: zip-${{ matrix.target }}
+          path: release/*.zip
           if-no-files-found: error
 
-  publish-release:
-    name: Publish GitHub Release
-    needs: build-standalone
-    runs-on: ubuntu-latest
+  universal:
+    name: Build macOS Universal
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: go.mod
+      - name: Build, merge and sign
+        run: |
+          for arch in amd64 arm64; do
+            GOOS=darwin GOARCH="$arch" CGO_ENABLED=0 go build -trimpath \
+              -ldflags "-s -w -X main.version=${GITHUB_REF_NAME#v}" -o "build/msr-$arch" ./cmd/msr-music-tool
+          done
+          lipo -create build/msr-amd64 build/msr-arm64 -output build/msr-music-tool
+          lipo -verify_arch x86_64 arm64 build/msr-music-tool
+          codesign --force --sign - build/msr-music-tool
+          codesign --verify --strict --all-architectures build/msr-music-tool
+          go run ./cmd/release-tool pack build/msr-music-tool release/msr-music-tool-macos-universal.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: zip-macos-universal
+          path: release/*.zip
+          if-no-files-found: error
+
+  smoke:
+    name: Smoke ${{ matrix.target }} on ${{ matrix.runner }}
+    needs: [binaries, universal]
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {runner: windows-2025, target: windows-amd64}
+          - {runner: windows-2025, target: windows-i686}
+          - {runner: windows-11-arm, target: windows-arm64}
+          - {runner: ubuntu-24.04, target: linux-amd64}
+          - {runner: ubuntu-24.04, target: linux-i686, emu: qemu-i386}
+          - {runner: ubuntu-24.04, target: linux-armv7, emu: qemu-arm}
+          - {runner: ubuntu-24.04-arm, target: linux-arm64}
+          - {runner: macos-15-intel, target: macos-universal}
+          - {runner: macos-15, target: macos-universal}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: go.mod
+      - uses: actions/download-artifact@v4
+        with:
+          name: zip-${{ matrix.target }}
+          path: release
+      - if: matrix.emu != ''
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y qemu-user
+      - name: Validate the published ZIP
+        shell: bash
+        env:
+          TARGET: ${{ matrix.target }}
+          EMULATOR: ${{ matrix.emu }}
+        run: |
+          archive="release/msr-music-tool-$TARGET.zip"
+          if [[ -n "$EMULATOR" ]]; then
+            go run ./cmd/release-tool smoke "$archive" "$GITHUB_REF_NAME" "$EMULATOR"
+          else
+            go run ./cmd/release-tool smoke "$archive" "$GITHUB_REF_NAME"
+          fi
+
+  live:
+    name: Verify the official site contract
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: go.mod
+      - run: go test ./internal/core -run '^TestLiveSite$' -count=1 -v
+        env:
+          MSR_RUN_LIVE_TESTS: '1'
+
+  publish:
+    name: Publish verified ZIPs
+    needs: [smoke, live, tests]
+    runs-on: ubuntu-24.04
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v6
-      - uses: astral-sh/setup-uv@v9.0.0
-        with:
-          version: "0.13.5"
       - uses: actions/download-artifact@v4
         with:
-          pattern: standalone-*
+          pattern: zip-*
           path: release
           merge-multiple: true
-      - run: uv build
-      - name: Collect Python packages and checksums
-        run: |
-          cp dist/* release/
-          cd release
-          sha256sum msr-tool-* msrmusictool-* > SHA256SUMS
-      - name: Create or update release
-        run: |
-          if gh release view "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
-            gh release upload "$GITHUB_REF_NAME" release/* --repo "$GITHUB_REPOSITORY" --clobber;
-          else
-            gh release create "$GITHUB_REF_NAME" release/* \
-              --repo "$GITHUB_REPOSITORY" \
-              --verify-tag \
-              --title "MSRMusicTool $GITHUB_REF_NAME" \
-              --generate-notes \
-              --latest
-          fi
+      - name: Verify GitHub asset digests and publish
         env:
           GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          tag="$GITHUB_REF_NAME"
+          prerelease=false
+          latest=true
+          if [[ "$tag" = *-* ]]; then prerelease=true; latest=false; fi
+
+          assets=(release/msr-music-tool-*.zip)
+          test "${#assets[@]}" -eq 8
+          {
+            printf '## 安装\n\n下载对应系统和架构的 ZIP，解压后运行 `msr-music-tool`。Linux/macOS 如有需要先运行 `chmod +x msr-music-tool`。\n\n'
+            printf 'Python 版用户首次需手动下载，原 TOML 配置与曲库缓存可直接使用。\n\n'
+            printf '## SHA-256\n\n```text\n'
+            (cd release && sha256sum msr-music-tool-*.zip)
+            printf '```\n'
+          } > "$RUNNER_TEMP/msr-release.md"
+
+          if ! gh release view "$tag" --json databaseId,isDraft > "$RUNNER_TEMP/msr-release.json"; then
+            gh release create "$tag" --draft --verify-tag --prerelease="$prerelease" \
+              --title "msr-music-tool $tag" --notes-file "$RUNNER_TEMP/msr-release.md"
+            gh release view "$tag" --json databaseId,isDraft > "$RUNNER_TEMP/msr-release.json"
+          fi
+          id=$(jq -r .databaseId "$RUNNER_TEMP/msr-release.json")
+          draft=$(jq -r .isDraft "$RUNNER_TEMP/msr-release.json")
+          if [[ "$draft" = true ]]; then gh release upload "$tag" "${assets[@]}" --clobber; fi
+
+          verify() {
+            gh api "repos/$GITHUB_REPOSITORY/releases/$id/assets?per_page=100" > "$RUNNER_TEMP/msr-assets.json" || return 1
+            jq -e 'length == 8' "$RUNNER_TEMP/msr-assets.json" >/dev/null || return 1
+            for asset in "${assets[@]}"; do
+              sum=$(sha256sum "$asset" | cut -d ' ' -f 1)
+              jq -e --arg name "${asset##*/}" --arg digest "sha256:$sum" \
+                '[.[] | select(.name == $name and .digest == $digest and .state == "uploaded")] | length == 1' \
+                "$RUNNER_TEMP/msr-assets.json" >/dev/null || return 1
+            done
+          }
+          for attempt in {1..12}; do
+            if verify; then
+              if [[ "$draft" = true ]]; then
+                gh release edit "$tag" --draft=false --latest="$latest" --notes-file "$RUNNER_TEMP/msr-release.md"
+              fi
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "The eight asset digests did not match." >&2
+          exit 1

@@ -4,19 +4,15 @@ default_install_hook_types: [pre-commit, commit-msg]
 repos:
   - repo: local
     hooks:
-      - id: ruff-check
-        name: Ruff check
-        entry: uv run --no-sync ruff check --fix
+      - id: go-vet
+        name: Go vet
+        entry: go vet ./...
         language: system
-        types_or: [python, pyi]
-      - id: ruff-format
-        name: Ruff format
-        entry: uv run --no-sync ruff format
-        language: system
-        types_or: [python, pyi]
+        pass_filenames: false
+        types: [go]
       - id: conventional-commit
         name: Conventional Commit message
-        entry: uv run --no-sync python -m msr_music_tool.commit_message
+        entry: go run ./cmd/release-tool commit-message
         language: system
         stages: [commit-msg]
         always_run: true

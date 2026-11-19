@@ -2,42 +2,48 @@ name: CI
 
 on:
   push:
+    branches: [main]
   pull_request:
+  workflow_call:
+
+permissions:
+  contents: read
 
 jobs:
   test:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [ubuntu-24.04, windows-2025, macos-15]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v6
-      - uses: astral-sh/setup-uv@v9.0.0
+      - uses: actions/setup-go@v6
         with:
-          version: "0.13.5"
-          enable-cache: true
-      - run: uv sync --frozen --dev
-      - if: runner.os == 'Linux'
-        run: uv run --no-sync ruff check .
-      - if: runner.os == 'Linux'
-        run: uv run --no-sync ruff format --check .
-      - name: Download latest real engines
+          go-version-file: go.mod
+      - name: Validate formatting and modules
+        if: runner.os == 'Linux'
+        run: |
+          test -z "$(gofmt -l cmd internal)"
+          go mod tidy -diff
+          go vet ./...
+      - name: Prepare real RPC engines
         if: runner.os == 'Windows'
         shell: pwsh
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release download --repo aria2/aria2 --pattern 'aria2-*-win-64bit-*.zip' --dir build/engines/aria2
-          if ($LASTEXITCODE -ne 0) { throw 'Failed to download latest Aria2 release' }
-          gh release download --repo AnInsomniacy/aria2-next --pattern 'aria2-next-*-windows-x86_64.exe' --dir build/engines/next
-          if ($LASTEXITCODE -ne 0) { throw 'Failed to download latest Aria2 Next release' }
+          $ErrorActionPreference = 'Stop'
+          gh release download release-1.37.0 --repo aria2/aria2 --pattern 'aria2-*-win-64bit-*.zip' --dir build/engines/aria2
+          if ($LASTEXITCODE -ne 0) { throw 'Aria2 download failed' }
+          gh release download v3.0.8 --repo AnInsomniacy/aria2-next --pattern 'aria2-next-*-windows-x86_64.exe' --dir build/engines/next
+          if ($LASTEXITCODE -ne 0) { throw 'Aria2 Next download failed' }
           $archive = Get-ChildItem build/engines/aria2 -Filter '*.zip' | Select-Object -First 1
           Expand-Archive -LiteralPath $archive.FullName -DestinationPath build/engines/aria2/extracted
-          $aria2 = (Get-ChildItem build/engines/aria2/extracted -Recurse -Filter aria2c.exe | Select-Object -First 1).FullName
-          $ariaNext = (Get-ChildItem build/engines/next -Filter '*.exe' | Select-Object -First 1).FullName
-          "MSR_ARIA2_BINARY=$aria2" >> $env:GITHUB_ENV
-          "MSR_ARIA_NEXT_BINARY=$ariaNext" >> $env:GITHUB_ENV
-      - run: uv run --no-sync pytest
+          $aria2 = Get-ChildItem build/engines/aria2/extracted -Recurse -Filter aria2c.exe | Select-Object -First 1
+          $ariaNext = Get-ChildItem build/engines/next -Filter '*.exe' | Select-Object -First 1
+          "MSR_ARIA2_BINARY=$($aria2.FullName)" >> $env:GITHUB_ENV
+          "MSR_ARIA_NEXT_BINARY=$($ariaNext.FullName)" >> $env:GITHUB_ENV
+      - run: go test ./...
       - if: runner.os == 'Linux'
-        run: uv build
+        run: go test -race -short ./...

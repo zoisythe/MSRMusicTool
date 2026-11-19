@@ -8,3 +8,20 @@ endpoint = "http://127.0.0.1:6800/jsonrpc"
 secret = ""
 poll_interval = 0.5
 # directory = "/shared/music"
+
+[update]
+check_on_startup = true
+
+[tui]
+# terminal, dark, light, contrast
+theme = "terminal"
+
+# [tui.colors]
+# background = "#18202E"
+# text = "#E7EDF5"
+# muted = "#A6B4C6"
+# accent = "#80CAFD"
+# selection = "#A6DCFF"
+# success = "#74DFA2"
+# warning = "#FFD078"
+# error = "#FFA1A7"
