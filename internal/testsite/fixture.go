@@ -123,10 +123,15 @@ func (f *Fixture) serve(w http.ResponseWriter, r *http.Request) {
 		contentType, body = "audio/wav", strings.Repeat("x", 64<<10)
 	}
 	w.Header().Set("Content-Type", contentType)
-	if r.URL.Path == "/777777.wav" && r.Method != http.MethodHead {
-		chunk := strings.Repeat("x", 8192)
+	if r.URL.Path == "/777777.wav" {
+		const chunkSize, chunks = 8192, 1000
+		w.Header().Set("Content-Length", strconv.Itoa(chunkSize*chunks))
+		if r.Method == http.MethodHead {
+			return
+		}
+		chunk := strings.Repeat("x", chunkSize)
 		w.(http.Flusher).Flush()
-		for range 1000 {
+		for range chunks {
 			select {
 			case <-r.Context().Done():
 				return

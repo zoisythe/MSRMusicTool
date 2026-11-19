@@ -10,8 +10,9 @@ import (
 type Tracker struct {
 	mu        sync.Mutex
 	resources map[string]Resource
+	order     []string
+	logs      []string
 	completed int
-	latest    Resource
 }
 
 func (t *Tracker) Update(p Progress) {
@@ -22,21 +23,72 @@ func (t *Tracker) Update(p Progress) {
 		if t.resources == nil {
 			t.resources = make(map[string]Resource)
 		}
-		t.resources[p.Resource.Key], t.latest = p.Resource, p.Resource
+		r := p.Resource
+		previous, exists := t.resources[r.Key]
+		if !exists {
+			t.order = append(t.order, r.Key)
+		}
+		if (r.finished() || r.Status == "retrying") && (!exists || previous.Status != r.Status || previous.Error != r.Error) {
+			log := r.Label + "：" + StatusLabel(r.Status)
+			if r.Error != "" {
+				log += " · " + r.Error
+			}
+			t.logs = append(t.logs, log)
+		}
+		t.resources[r.Key] = r
 	}
+	if p.Song != nil {
+		t.logs = append(t.logs, p.Song.Song.Name+"："+p.Song.StatusLabel())
+	}
+}
+
+func (s SongResult) StatusLabel() string {
+	switch s.Outcome {
+	case "success":
+		return "成功"
+	case "skipped":
+		return "已存在，跳过"
+	default:
+		return "失败"
+	}
+}
+
+func (r Resource) finished() bool {
+	switch r.Status {
+	case "complete", "skipped", "failed", "error", "removed":
+		return true
+	}
+	return false
 }
 
 type ProgressSnapshot struct {
 	Done, Total int64
 	Speed       float64
 	Completed   int
-	Latest      Resource
 }
 
 func (t *Tracker) Snapshot() ProgressSnapshot {
 	t.mu.Lock()
 	defer t.mu.Unlock()
-	p := ProgressSnapshot{Completed: t.completed, Latest: t.latest}
+	return t.snapshot()
+}
+
+// Activity captures the summary, queued or running resources, and log in one read.
+func (t *Tracker) Activity(logLimit int) (ProgressSnapshot, []Resource, []string) {
+	t.mu.Lock()
+	defer t.mu.Unlock()
+	var pending []Resource
+	for _, key := range t.order {
+		if r := t.resources[key]; !r.finished() {
+			pending = append(pending, r)
+		}
+	}
+	recent := t.logs[max(0, len(t.logs)-logLimit):]
+	return t.snapshot(), pending, append([]string(nil), recent...)
+}
+
+func (t *Tracker) snapshot() ProgressSnapshot {
+	p := ProgressSnapshot{Completed: t.completed}
 	for _, r := range t.resources {
 		p.Done += r.Downloaded
 		p.Speed += r.Speed

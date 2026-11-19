@@ -50,8 +50,10 @@ const (
 )
 
 var colorLabels = []string{"背景", "正文", "次要文字", "强调", "选中", "成功", "警告", "错误"}
-var themeIDs = []string{"terminal", "dark", "light", "contrast"}
-var themeLabels = []string{"终端默认", "深色", "浅色", "高对比"}
+var themeIDs = []string{"classic", "dark", "light", "contrast"}
+var themeLabels = []string{"经典深色", "深色", "浅色", "高对比"}
+
+const installAction = -1
 
 type form struct {
 	fields          []field
@@ -84,22 +86,31 @@ func newForm(c core.Config) *form {
 		f.fields[len(f.fields)-1].input.Placeholder = "继承预设"
 		f.fields[len(f.fields)-1].input.CharLimit = 7
 	}
+	f.index = f.firstIndex()
 	return f
+}
+
+func (f *form) firstIndex() int {
+	if install.Available() {
+		return installAction
+	}
+	return 0
 }
 
 func (f *form) focus() tea.Cmd {
 	for i := range f.fields {
 		f.fields[i].input.Blur()
 	}
-	if f.index >= len(f.fields) || len(f.fields[f.index].options) > 0 {
+	if f.index < 0 || f.index >= len(f.fields) || len(f.fields[f.index].options) > 0 {
 		return nil
 	}
 	return f.fields[f.index].input.Focus()
 }
 
 func (f *form) step(change int) tea.Cmd {
-	count := len(f.fields) + 1
-	f.index = (f.index + change + count) % count
+	first := f.firstIndex()
+	count := len(f.fields) + 1 - first
+	f.index = first + (f.index-first+change+count)%count
 	return f.focus()
 }
 
@@ -221,6 +232,10 @@ func (m *model) settingsKeys(msg tea.KeyPressMsg) tea.Cmd {
 		m.view = browsePage
 		return m.loadDirectory(path)
 	case "enter":
+		if f.index == installAction {
+			m.openPrompt(installPage, settingsPage)
+			return nil
+		}
 		if f.index == len(f.fields) {
 			return m.saveSettings()
 		}
@@ -228,7 +243,7 @@ func (m *model) settingsKeys(msg tea.KeyPressMsg) tea.Cmd {
 			return f.step(1)
 		}
 	}
-	if f.index < len(f.fields) {
+	if f.index >= 0 && f.index < len(f.fields) {
 		field := &f.fields[f.index]
 		if len(field.options) > 0 {
 			delta := 0
@@ -249,7 +264,7 @@ func (m *model) settingsKeys(msg tea.KeyPressMsg) tea.Cmd {
 }
 
 func (m *model) editInput(msg tea.Msg) tea.Cmd {
-	if m.form == nil || m.form.index >= len(m.form.fields) || m.formBusy {
+	if m.form == nil || m.form.index < 0 || m.form.index >= len(m.form.fields) || m.formBusy {
 		return nil
 	}
 	field := &m.form.fields[m.form.index]

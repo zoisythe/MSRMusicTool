@@ -58,6 +58,8 @@ type Settings struct {
 	raw      []byte
 }
 
+func (s Settings) Configured() bool { return s.raw != nil }
+
 var ColorKeys = []string{"background", "text", "muted", "accent", "selection", "success", "warning", "error"}
 var HexColor = regexp.MustCompile("^#[0-9a-fA-F]{6}$")
 var windowsAbs = regexp.MustCompile("^(?:[A-Za-z]:[/\\\\]|[/\\\\]{2}[^/\\\\]+[/\\\\][^/\\\\]+)")
@@ -84,7 +86,7 @@ func defaults() Config {
 	return Config{
 		Download: DownloadConfig{Backend: "http", Concurrency: 4},
 		RPC:      RPCConfig{Endpoint: "http://127.0.0.1:6800/jsonrpc", PollInterval: 0.5},
-		TUI:      TUIConfig{Theme: "terminal"},
+		TUI:      TUIConfig{Theme: "classic"},
 		Update:   UpdateConfig{CheckOnStartup: true},
 	}
 }
@@ -140,6 +142,9 @@ func LoadSettings(path, override string) (Settings, error) {
 			return Settings{}, fmt.Errorf("%s: rpc.directory 必须为引擎侧绝对路径", path)
 		}
 	}
+	if s.TUI.Theme == "terminal" {
+		s.TUI.Theme = "classic"
+	}
 	s.Output, err = s.Validate(s.Config)
 	return s, err
 }
@@ -172,7 +177,7 @@ func (s Settings) Validate(c Config) (string, error) {
 		return field("rpc.directory 必须为引擎侧绝对路径")
 	}
 	switch c.TUI.Theme {
-	case "terminal", "dark", "light", "contrast":
+	case "classic", "dark", "light", "contrast":
 	default:
 		return field("tui.theme 预设无效")
 	}

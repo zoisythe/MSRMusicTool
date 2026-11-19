@@ -8,7 +8,9 @@ import (
 	"time"
 
 	tea "charm.land/bubbletea/v2"
+	"github.com/charmbracelet/x/ansi"
 	"github.com/zoisythe/MSRMusicTool/internal/core"
+	"github.com/zoisythe/MSRMusicTool/internal/install"
 )
 
 func testModel(t *testing.T) *model {
@@ -30,6 +32,90 @@ func testModel(t *testing.T) *model {
 
 func key(code rune, text string) tea.KeyPressMsg { return tea.KeyPressMsg{Code: code, Text: text} }
 
+func TestClassicCatalogFrame(t *testing.T) {
+	t.Setenv("TERM", "xterm-256color")
+	if value, ok := os.LookupEnv("NO_COLOR"); ok {
+		if err := os.Unsetenv("NO_COLOR"); err != nil {
+			t.Fatal(err)
+		}
+		t.Cleanup(func() { os.Setenv("NO_COLOR", value) })
+	}
+	m := testModel(t)
+	v := m.View()
+	plain := ansi.Strip(v.Content)
+	title, _, _ := strings.Cut(plain, "\n")
+	if strings.TrimSpace(title) != core.AppName+" — 塞壬唱片音乐下载器" {
+		t.Errorf("unexpected catalog title bar: %q", title)
+	}
+	for _, want := range []string{"配置：", "下载：", "╭", "中文专辑", "已选择 0 首歌曲", "F2 设置", "q 退出", "→ 进入专辑", "专辑内按 ← 返回曲库"} {
+		if !strings.Contains(plain, want) {
+			t.Errorf("catalog is missing %q", want)
+		}
+	}
+	if v.BackgroundColor == nil || !strings.Contains(v.Content, "\x1b[48;") {
+		t.Error("the default theme must paint cell backgrounds explicitly")
+	}
+	lines := strings.Split(v.Content, "\n")
+	if len(lines) != m.height || !strings.Contains(ansi.Strip(lines[len(lines)-1]), "F2 设置") {
+		t.Fatal("shortcut bar must be docked to the last terminal row")
+	}
+	for _, line := range lines {
+		if width := ansi.StringWidth(line); width != m.width {
+			t.Fatalf("line width = %d, want %d", width, m.width)
+		}
+	}
+}
+
+func TestCatalogQuitShortcut(t *testing.T) {
+	m := testModel(t)
+	m.handle(key('/', "/"))
+	m.handle(key('q', "q"))
+	if !m.searchOpen || m.search.Value() != "q" {
+		t.Fatal("q must be accepted as text while editing a search")
+	}
+	m.handle(key(tea.KeyEnter, ""))
+	command := m.handle(key('q', "q"))
+	if command == nil {
+		t.Fatal("q did not request exit from the catalog")
+	}
+	if _, ok := command().(tea.QuitMsg); !ok {
+		t.Fatal("q did not quit after the search was submitted")
+	}
+}
+
+func TestInstallActionAfterDecliningStartupOffer(t *testing.T) {
+	if !install.Available() {
+		t.Skip("PATH installation is available on Windows and Linux")
+	}
+	dir := t.TempDir()
+	t.Setenv("LOCALAPPDATA", dir)
+	t.Setenv("XDG_CONFIG_HOME", dir)
+	m := testModel(t)
+	m.width, m.height = 100, 30
+	m.handle(installOfferMsg(true))
+	assertFlowText(t, m, "msr-music-tool — 塞壬唱片音乐下载器", "安装到用户目录", "╭", "加入用户 PATH", "╰", "取消", "安装", "Enter 确定")
+	decline := clickLabel(t, m, "取消", false)
+	m.handle(decline())
+	if m.view != catalogPage || install.ShouldOffer() {
+		t.Fatal("startup decline was not remembered")
+	}
+	m.handle(key(tea.KeyF2, ""))
+	if !strings.Contains(ansi.Strip(m.View().Content), "安装并加入 PATH") {
+		t.Error("settings lacks a visible PATH installation action")
+	}
+	m.handle(key(tea.KeyEnter, ""))
+	if m.view != installPage || m.afterPrompt != settingsPage {
+		t.Fatal("Enter on the settings action did not reopen the installation prompt")
+	}
+	m.handle(tea.WindowSizeMsg{Width: 64, Height: 14})
+	assertFlowText(t, m, "安装到用户目录", "╭", "加入用户 PATH", "╰", "取消", "安装")
+	m.handle(key(tea.KeyEscape, ""))
+	m.handle(key(tea.KeyEnter, ""))
+	if m.view != installPage {
+		t.Fatal("the action should remain available after another decline")
+	}
+}
+
 func TestSettingsPreviewCancelSave(t *testing.T) {
 	m := testModel(t)
 	m.handle(key(tea.KeyF2, ""))
@@ -39,11 +125,11 @@ func TestSettingsPreviewCancelSave(t *testing.T) {
 	m.form.fields[themeField].value = 1
 	m.form.fields[firstColorField+1].input.SetValue("#123456")
 	preview := m.form.colors(m.config.TUI, true)
-	if preview.Theme != "dark" || preview.Colors["text"] != "#123456" || m.config.TUI.Theme != "terminal" {
+	if preview.Theme != "dark" || preview.Colors["text"] != "#123456" || m.config.TUI.Theme != "classic" {
 		t.Fatal("theme preview is not isolated")
 	}
 	m.handle(key(tea.KeyEscape, ""))
-	if m.form != nil || m.config.TUI.Theme != "terminal" {
+	if m.form != nil || m.config.TUI.Theme != "classic" {
 		t.Fatal("cancel kept draft")
 	}
 	m.handle(key(tea.KeyF2, ""))

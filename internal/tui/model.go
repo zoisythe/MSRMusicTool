@@ -3,7 +3,6 @@ package tui
 import (
 	"context"
 	"errors"
-	"fmt"
 	"io"
 	"maps"
 	"os"
@@ -117,7 +116,11 @@ type model struct {
 	searchSeq    int
 	prepared     core.Prepared
 	mode, button int
+	lastMode     int
+	lastConfirm  int
+	modeCursor   int
 	modeOpen     bool
+	flowOffset   int
 	tracker      *core.Tracker
 	frame        int
 	batch        core.BatchResult
@@ -321,6 +324,7 @@ func (m *model) startDownload() tea.Cmd {
 	ctx, cancel := context.WithCancel(m.ctx)
 	m.cancelWork = cancel
 	m.view = downloadPage
+	m.lastMode = m.mode
 	m.tracker = &core.Tracker{}
 	m.tracker.Update(core.Progress{Completed: len(m.prepared.Failures)})
 	m.frame = 0
@@ -406,7 +410,9 @@ func (m *model) handle(msg tea.Msg) tea.Cmd {
 		}
 		m.finishRequest()
 		m.prepared = msg.prepared
-		m.view, m.button, m.mode, m.modeOpen = confirmPage, 0, 0, false
+		m.view, m.button, m.mode, m.modeOpen = confirmPage, 2, m.lastMode, false
+		m.lastConfirm = 2
+		m.flowOffset = 0
 	case searchMsg:
 		if msg.sequence == m.searchSeq && m.searchOpen {
 			m.query = msg.query
@@ -426,6 +432,7 @@ func (m *model) handle(msg tea.Msg) tea.Cmd {
 			return tea.Quit
 		}
 		m.view, m.button = resultPage, 0
+		m.flowOffset = 0
 	case updateMsg:
 		m.checkingUpdate = false
 		if msg.err != nil {
@@ -493,6 +500,10 @@ func (m *model) handle(msg tea.Msg) tea.Cmd {
 			m.frame++
 			return tick()
 		}
+	case clickMsg:
+		if !m.quitting && !m.formBusy && m.view == msg.page && (m.view != confirmPage || m.modeOpen == msg.modeOpen) {
+			return msg.action(m)
+		}
 	case tea.KeyPressMsg:
 		if msg.String() == "ctrl+c" {
 			return m.interrupt()
@@ -522,7 +533,7 @@ func (m *model) keys(key tea.KeyPressMsg) tea.Cmd {
 		case "esc", "left":
 			return m.backToCatalog()
 		case "up", "down", "pgup", "pgdown", "home", "end":
-			m.detailCursor = move(m.detailCursor, len(m.detail.Songs), m.listSize(), name)
+			m.detailCursor = move(m.detailCursor, len(m.detail.Songs), m.visibleLibraryRows(), name)
 		case "space", " ":
 			if m.detailCursor < len(m.detail.Songs) {
 				cid := m.detail.Songs[m.detailCursor].CID
@@ -538,6 +549,8 @@ func (m *model) keys(key tea.KeyPressMsg) tea.Cmd {
 		return m.confirmKeys(name)
 	case resultPage:
 		switch name {
+		case "pgup", "pgdown", "home", "end":
+			m.scrollDownloadPanel(name)
 		case "q":
 			return tea.Quit
 		case "esc":
@@ -566,6 +579,9 @@ func (m *model) keys(key tea.KeyPressMsg) tea.Cmd {
 
 func (m *model) catalogKeys(key tea.KeyPressMsg) tea.Cmd {
 	name := key.String()
+	if name == "q" && !m.searchOpen {
+		return tea.Quit
+	}
 	if m.pending != "" {
 		if name == "esc" {
 			m.finishRequest()
@@ -591,7 +607,7 @@ func (m *model) catalogKeys(key tea.KeyPressMsg) tea.Cmd {
 			m.rebuild()
 			return m.backToCatalog()
 		case "up", "down", "pgup", "pgdown":
-			m.cursor = move(m.cursor, len(m.rows), m.listSize(), name)
+			m.cursor = move(m.cursor, len(m.rows), m.visibleLibraryRows(), name)
 		default:
 			return m.searchInput(key)
 		}
@@ -611,7 +627,7 @@ func (m *model) catalogKeys(key tea.KeyPressMsg) tea.Cmd {
 		m.search.SetWidth(max(8, m.width-12))
 		return m.search.Focus()
 	case "up", "down", "pgup", "pgdown", "home", "end":
-		m.cursor = move(m.cursor, len(m.rows), m.listSize(), name)
+		m.cursor = move(m.cursor, len(m.rows), m.visibleLibraryRows(), name)
 	case "space", " ":
 		if m.cursor < len(m.rows) {
 			row := m.rows[m.cursor]
@@ -682,30 +698,41 @@ func (m *model) confirmKeys(name string) tea.Cmd {
 	}
 	if m.modeOpen {
 		switch name {
-		case "up", "left":
-			m.mode = (m.mode + len(modes) - 1) % len(modes)
-		case "down", "right":
-			m.mode = (m.mode + 1) % len(modes)
+		case "up":
+			m.modeCursor = (m.modeCursor + len(modes) - 1) % len(modes)
+		case "down":
+			m.modeCursor = (m.modeCursor + 1) % len(modes)
 		case "enter":
+			m.mode = m.modeCursor
 			m.modeOpen = false
 		}
 		return nil
 	}
 	switch name {
+	case "pgup", "pgdown", "home", "end":
+		m.scrollDownloadPanel(name)
 	case "tab":
-		m.button = (m.button + 1) % 3
+		m.focusConfirmation((m.button + 1) % 3)
 	case "shift+tab":
-		m.button = (m.button + 2) % 3
-	case "up", "left", "down", "right":
+		m.focusConfirmation((m.button + 2) % 3)
+	case "up":
+		m.focusConfirmation(0)
+	case "down":
 		if m.button == 0 {
-			m.modeOpen = true
-		} else {
-			m.button = 3 - m.button
+			m.focusConfirmation(max(1, m.lastConfirm))
+		}
+	case "left":
+		m.focusConfirmation(1)
+	case "right":
+		m.focusConfirmation(2)
+	case "space", " ":
+		if m.button == 0 {
+			m.openDownloadMode()
 		}
 	case "enter":
 		switch m.button {
 		case 0:
-			m.modeOpen = true
+			m.openDownloadMode()
 		case 1:
 			return m.backToCatalog()
 		case 2:
@@ -713,6 +740,18 @@ func (m *model) confirmKeys(name string) tea.Cmd {
 		}
 	}
 	return nil
+}
+
+func (m *model) focusConfirmation(index int) {
+	m.button = index
+	if index != 0 {
+		m.lastConfirm = index
+	}
+}
+
+func (m *model) openDownloadMode() {
+	m.modeCursor = m.mode
+	m.modeOpen = true
 }
 
 func (m *model) closePrompt() tea.Cmd {
@@ -725,8 +764,12 @@ func (m *model) closePrompt() tea.Cmd {
 
 func (m *model) promptKeys(name string) tea.Cmd {
 	switch name {
-	case "tab", "shift+tab", "left", "right", "up", "down":
+	case "tab", "shift+tab", "up", "down":
 		m.button = 1 - m.button
+	case "left":
+		m.button = 0
+	case "right":
+		m.button = 1
 	case "esc":
 		if m.view == installPage {
 			return m.answerInstall(false, false)
@@ -815,10 +858,6 @@ func (m *model) browseKeys(name string) tea.Cmd {
 		f.directoryCursor = move(f.directoryCursor, len(f.directories), m.listSize(), name)
 	}
 	return nil
-}
-
-func (m *model) debugCount() string {
-	return fmt.Sprintf("%d 张专辑 · %d 首歌 · 已选 %d 首", len(m.catalog.Albums), len(m.catalog.Songs), len(m.selected))
 }
 
 func safe(s string) string {

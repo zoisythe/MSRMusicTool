@@ -10,7 +10,7 @@ import (
 
 func TestSettingsRoundTrip(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "legacy.toml")
-	old := "[download]\ndirectory = 'Music'\nprogress_style = 'legacy'\n[other]\nvalue = 99\n"
+	old := "[download]\ndirectory = 'Music'\nprogress_style = 'legacy'\n[tui]\ntheme = 'terminal'\n[tui.colors]\naccent = '#012345'\n[other]\nvalue = 99\n"
 	if err := os.WriteFile(path, []byte(old), 0600); err != nil {
 		t.Fatal(err)
 	}
@@ -21,6 +21,9 @@ func TestSettingsRoundTrip(t *testing.T) {
 	}
 	if settings.Output != override || settings.Download.Concurrency != 4 || !settings.Update.CheckOnStartup {
 		t.Fatalf("settings: %+v", settings)
+	}
+	if settings.TUI.Theme != "classic" || settings.TUI.Colors["accent"] != "#012345" {
+		t.Fatal("legacy theme did not adopt the opaque palette with its custom colors")
 	}
 	draft := settings.Config
 	draft.Download.Concurrency = 3

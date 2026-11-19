@@ -71,6 +71,7 @@ type Resource struct {
 type Progress struct {
 	Resource  Resource
 	Completed int
+	Song      *SongResult
 }
 
 func (s *Site) Prepare(ctx context.Context, c Catalog, ids []string, limit int, cached map[string]AlbumDetail) Prepared {
@@ -218,6 +219,17 @@ func (s *Site) Download(ctx context.Context, settings Settings, c Catalog, prepa
 	results := make([]SongResult, prepared.Count()-len(prepared.Failures))
 	offset := 0
 	for _, album := range prepared.Albums {
+		if mode == ModeAll {
+			b.progress(album.Detail.CID+":cover", album.Detail.Name+" · 封面")("waiting", 0, -1, 0, "")
+		}
+		for _, song := range album.Songs {
+			b.progress(song.CID+":audio", song.Name+" · 音频")("waiting", 0, -1, 0, "")
+			if mode != ModeAudio {
+				b.progress(song.CID+":lyrics", song.Name+" · 歌词")("waiting", 0, -1, 0, "")
+			}
+		}
+	}
+	for _, album := range prepared.Albums {
 		var covers map[string]error
 		coverDone := make(chan struct{})
 		if mode == ModeAll {
@@ -243,7 +255,7 @@ func (s *Site) Download(ctx context.Context, settings Settings, c Catalog, prepa
 				results[index] = r
 				b.state.Lock()
 				b.completed++
-				b.change(Progress{Completed: b.completed})
+				b.change(Progress{Completed: b.completed, Song: &results[index]})
 				b.state.Unlock()
 			})
 		}

@@ -13,8 +13,8 @@ poll_interval = 0.5
 check_on_startup = true
 
 [tui]
-# terminal, dark, light, contrast
-theme = "terminal"
+# classic, dark, light, contrast
+theme = "classic"
 
 # [tui.colors]
 # background = "#18202E"
