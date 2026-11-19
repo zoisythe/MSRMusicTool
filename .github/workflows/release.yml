@@ -66,7 +66,7 @@ jobs:
               -ldflags "-s -w -X main.version=${GITHUB_REF_NAME#v}" -o "build/msr-$arch" ./cmd/msr-music-tool
           done
           lipo -create build/msr-amd64 build/msr-arm64 -output build/msr-music-tool
-          lipo -verify_arch x86_64 arm64 build/msr-music-tool
+          lipo build/msr-music-tool -verify_arch x86_64 arm64
           codesign --force --sign - build/msr-music-tool
           codesign --verify --strict --all-architectures build/msr-music-tool
           go run ./cmd/release-tool pack build/msr-music-tool release/msr-music-tool-macos-universal.zip

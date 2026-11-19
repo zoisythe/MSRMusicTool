@@ -45,29 +45,49 @@ func Apply(s Staged, args []string) error {
 		os.Remove(s.Path)
 		return err
 	}
-	ready := make(chan bool, 1)
+	ready := make(chan error, 1)
 	go func() {
 		reader := bufio.NewReader(out)
 		line, err := reader.ReadString('\n')
-		ready <- err == nil && strings.TrimSpace(line) == "ready"
+		line = strings.TrimSpace(line)
+		if reason, ok := strings.CutPrefix(line, "error: "); ok {
+			ready <- errors.New(reason)
+			return
+		}
+		if err != nil || line != "ready" {
+			ready <- errors.New("更新进程在完成握手前退出")
+			return
+		}
+		ready <- nil
 	}()
-	timeout := time.NewTimer(5 * time.Second)
+	timeout := time.NewTimer(20 * time.Second)
 	defer timeout.Stop()
+	var handoffErr error
 	select {
-	case ok := <-ready:
-		if ok {
+	case handoffErr = <-ready:
+		if handoffErr == nil {
 			out.Close()
 			return nil
 		}
 	case <-timeout.C:
+		handoffErr = errors.New("等待更新进程超时")
 	}
 	command.Process.Kill()
 	command.Wait()
 	os.Remove(s.Path)
-	return errors.New("无法启动 Windows 更新进程")
+	return fmt.Errorf("无法启动 Windows 更新进程：%w", handoffErr)
 }
 
-func RunHelper(args []string) error {
+type beforeHandoff struct{ error }
+
+func RunHelper(args []string) (err error) {
+	ready := false
+	defer func() {
+		if err != nil && !ready {
+			fmt.Fprintln(os.Stdout, "error:", err)
+			err = beforeHandoff{err}
+		}
+	}()
 	if len(args) < 3 {
 		return errors.New("无效的更新交接")
 	}
@@ -76,7 +96,7 @@ func RunHelper(args []string) error {
 		return err
 	}
 	target := args[0]
-	if !filepath.IsAbs(target) || !strings.EqualFold(filepath.Dir(stage), filepath.Dir(target)) ||
+	if !filepath.IsAbs(target) || !sameFile(filepath.Dir(stage), filepath.Dir(target)) ||
 		!strings.HasPrefix(filepath.Base(stage), ".msr-update-") || !strings.HasSuffix(stage, ".exe") ||
 		strings.EqualFold(stage, target) {
 		return errors.New("无效的更新文件位置")
@@ -96,15 +116,13 @@ func RunHelper(args []string) error {
 		return err
 	}
 	imagePath := windows.UTF16ToString(buf[:length])
-	if real, err := filepath.EvalSymlinks(imagePath); err == nil {
-		imagePath = real
-	}
-	if !strings.EqualFold(imagePath, target) {
+	if !sameFile(imagePath, target) {
 		return errors.New("更新目标与父进程不符")
 	}
 	if _, err := fmt.Fprintln(os.Stdout, "ready"); err != nil {
 		return err
 	}
+	ready = true
 	status, err := windows.WaitForSingleObject(parent, 30000)
 	if err != nil || status != windows.WAIT_OBJECT_0 {
 		return errors.New("旧程序未退出，更新未应用")
@@ -144,7 +162,20 @@ func RunHelper(args []string) error {
 	return command.Process.Release()
 }
 
+func sameFile(a, b string) bool {
+	first, err := os.Stat(a)
+	if err != nil {
+		return false
+	}
+	second, err := os.Stat(b)
+	return err == nil && os.SameFile(first, second)
+}
+
 func ReportHelperError(err error) {
+	var early beforeHandoff
+	if errors.As(err, &early) {
+		return
+	}
 	body, _ := windows.UTF16PtrFromString(err.Error())
 	title, _ := windows.UTF16PtrFromString("msr-music-tool 更新")
 	windows.MessageBox(0, body, title, windows.MB_ICONERROR)

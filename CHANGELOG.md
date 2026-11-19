@@ -1,6 +1,6 @@
 # Changelog
 
-## v0.3.0-rc.1
+## v0.3.0-rc.2
 
 - 用 Go 重写 CLI、TUI 和下载后端。新命令为 `msr-music-tool`，继续读取旧 TOML 和曲库缓存。
 - 新增 TUI 配置表单、四种预设主题和自定义配色。
