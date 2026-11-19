@@ -138,6 +138,7 @@ jobs:
     permissions:
       contents: write
     steps:
+      - uses: actions/checkout@v6
       - uses: actions/download-artifact@v4
         with:
           pattern: zip-*
@@ -156,6 +157,11 @@ jobs:
           assets=(release/msr-music-tool-*.zip)
           test "${#assets[@]}" -eq 8
           {
+            awk -v heading="## $tag" '
+              $0 == heading { section = 1; next }
+              section && /^## / { exit }
+              section { print }
+            ' CHANGELOG.md
             printf '## 安装\n\n下载对应系统和架构的 ZIP，解压后运行 `msr-music-tool`。Linux/macOS 如有需要先运行 `chmod +x msr-music-tool`。\n\n'
             printf 'Python 版用户首次需手动下载，原 TOML 配置与曲库缓存可直接使用。\n\n'
             printf '## SHA-256\n\n```text\n'

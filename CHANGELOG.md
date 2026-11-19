@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.3.0
+
+- 用 Go 重写 CLI、TUI 和下载后端。新命令为 `msr-music-tool`，继续读取旧 TOML 和曲库缓存。
+- 恢复经典深色 TUI 和下载流程的布局。按钮、选项和快捷键栏支持鼠标点击，确认页支持方向键切换焦点。
+- 新增 TUI 配置表单、四种预设主题和自定义配色。Windows 和 Linux 可在首次启动或从设置安装到 `~/.local/bin` 并配置 PATH。
+- 启动时检查更新，经确认后校验 ZIP 并原地替换程序。
+- 发布八个单文件 ZIP，覆盖 Windows 和 Linux 的 amd64、ARM64、i686，另提供 Linux ARMv7 和 macOS Universal。
+
 ## v0.3.0-rc.2
 
 - 用 Go 重写 CLI、TUI 和下载后端。新命令为 `msr-music-tool`，继续读取旧 TOML 和曲库缓存。
